@@ -1,8 +1,10 @@
 HELP.md
+### Maven ###
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+.mvn/timing.properties
 
 ### STS ###
 .apt_generated
@@ -18,6 +20,7 @@ target/
 *.iws
 *.iml
 *.ipr
+out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -31,3 +34,33 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Spring Boot ###
+*.log
+*.tmp
+*.out
+*.pid
+*.gz
+*.swp
+
+### Eclipse ###
+.project
+.classpath
+.settings/
+bin/
+
+### MacOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+
+### Windows ###
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+### Misc ###
+*.bak
+*.tmp
+*.swp
