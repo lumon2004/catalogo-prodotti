@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "security.remember-me.key",
+    "type": "java.lang.String",
+    "description": "A description for 'security.remember-me.key'"
+  },
+  {
+    "name": "security.remember-me.token-validity-seconds",
+    "type": "java.lang.String",
+    "description": "A description for 'security.remember-me.token-validity-seconds'"
+  }
+]}

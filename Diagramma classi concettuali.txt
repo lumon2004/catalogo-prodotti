@@ -1,0 +1,29 @@
+@startuml
+title Modello di dominio - Catalogo Prodotti (SIW)
+
+class Utente {
+  - id: Long
+  - username: String
+  - password: String
+  - ruolo: String  <<enum: ADMIN, USER>>
+}
+
+class Prodotto {
+  - id: Long
+  - nome: String
+  - prezzo: Double
+  - descrizione: String
+  - tipologia: String
+}
+
+class Commento {
+  - id: Long
+  - testo: String
+  - dataCreazione: LocalDateTime
+}
+
+Utente "1" -- "0..*" Commento : scrive >
+Prodotto "1" -- "0..*" Commento : riceve >
+Prodotto "0..*" -- "0..*" Prodotto : simile a >
+
+@enduml
