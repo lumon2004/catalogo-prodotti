@@ -10,9 +10,8 @@ public class Prodotto {
     // Attributo identificativo del prodotto
     // Utilizzo di una sequenza per la generazione automatica degli ID
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prodotto_seq")
-    @SequenceGenerator(name = "prodotto_seq", sequenceName = "prodotto_seq", allocationSize = 1
-    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prodotto_id_seq")
+    @SequenceGenerator(name = "prodotto_id_seq", sequenceName = "prodotto_id_seq", allocationSize = 1)
     private Long id;
 
     // L'attributo nome non può essere nullo
@@ -82,6 +81,12 @@ public class Prodotto {
     }
     public void setProdottiSimili(Set<Prodotto> prodottiSimili) {
         this.prodottiSimili = prodottiSimili;
+    }
+    public List<Commento> getCommenti() {
+        return this.commenti;
+    }
+    public void setCommenti(List<Commento> commenti) {
+        this.commenti = commenti;
     }
 
     // metodi equals e hashCode

@@ -33,7 +33,7 @@ public class HomeController {
 
         List<Prodotto> tutti = prodottoService.findAll();
         model.addAttribute("utente", utente);
-        model.addAttribute("tuttiProdotti", tutti);
+        model.addAttribute("prodotti", tutti);
         model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
         return "home";
     }

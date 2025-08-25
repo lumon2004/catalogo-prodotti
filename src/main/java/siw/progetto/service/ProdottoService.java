@@ -29,4 +29,8 @@ public class ProdottoService {
     public void deleteById(Long id) {
         prodottoRepository.deleteById(id);
     }
+
+    public List<Prodotto> findSimilarProducts(Prodotto prodotto) {
+        return prodottoRepository.findByTipologia(prodotto.getTipologia());
+    }
 }
