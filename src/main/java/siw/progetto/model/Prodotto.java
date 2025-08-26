@@ -30,6 +30,8 @@ public class Prodotto {
     @Column(nullable = false)
     private String tipologia;
 
+    private String imagePath;
+
     // La relazione many-to-many auto-referenziale per "prodotti simili"
     // La tabella di join avrà due colonne: prodotto_id e simile_id
     @ManyToMany
@@ -87,6 +89,19 @@ public class Prodotto {
     }
     public void setCommenti(List<Commento> commenti) {
         this.commenti = commenti;
+    }
+    public String getImagePath() {
+        return this.imagePath;
+    }
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+    public String getFullImageUrl() {
+        if (this.imagePath != null && this.imagePath.startsWith("default-")) {
+            return "/img/" + this.imagePath;
+        } else {
+            return "/uploads/" + this.imagePath;
+        }
     }
 
     // metodi equals e hashCode

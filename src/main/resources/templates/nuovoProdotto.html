@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Aggiungi nuovo prodotto</title>
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/nuovoProdotto.css">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
+</head>
+<body>
+	<header><h1><a href="/home">Catalogo Prodotti</a></h1></header>
+	<main>
+		<!-- Form di creazione di un nuovo prodotto -->
+		<div class="container">
+			<h2>Aggiungi un nuovo prodotto</h2>
+			<form th:action="@{/prodotti/new}" method="post" th:object="${prodotto}" enctype="multipart/form-data">
+				<label for="title">Inserisci il nome del prodotto:</label><br/>
+				<input type="text" id="title" th:field="*{nome}" required placeholder="Nome"/><br/>
+
+				<label for="description">Inserisci una descrizione: (facoltativo)</label><br/>
+				<textarea id="description" th:field="*{descrizione}" placeholder="Descrizione"></textarea><br/>
+
+				<label for="location">Inserisci il prezzo del prodotto:</label><br/>
+				<input type="text" id="location" th:field="*{prezzo}" required placeholder="Prezzo"/><br/>
+		
+				<label for="imagePath">Seleziona una copertina per l'evento:</label><br/>
+				<div class="image-selector" th:field="*{imagePath}">
+					<label>
+						<input type="radio" name="imagePath" value="Smartphone.jpg" hidden/>
+						<img src="/img/default-smartphone.jpg" alt="Smartphone" />
+					</label>
+					<label>
+						<input type="radio" name="imagePath" value="Laptop.jpg" hidden/>
+						<img src="/img/default-laptop.jpg" alt="Laptop" />
+					</label>
+					<label>
+						<input type="radio" name="imagePath" value="Tablet.jpg" hidden/>
+						<img src="/img/default-tablet.jpg" alt="Tablet" />
+					</label>
+					<label>
+						<input type="radio" name="imagePath" value="Auricolari.jpg" hidden/>
+						<img src="/img/default-auricolari.jpg" alt="Auricolari" />
+					</label>
+					<label>
+						<input type="radio" name="imagePath" value="Cuffie.jpg" hidden/>
+						<img src="/img/default-cuffie.jpg" alt="Cuffie" />
+					</label>
+					<label>
+						<input type="radio" name="imagePath" value="Console.jpg" hidden/>
+						<img src="/img/default-console.jpg" alt="Console" />
+					</label>
+					<div style="display: flex; align-items: center; position: relative;">
+						<label for="customImage" style="width: 70%">
+							<input type="file" id="customImage" name="customImage" accept="image/*">
+						</label>
+						<span class="material-symbols-rounded" style="margin-left: 5%; margin-bottom: 2%;">info</span>
+						<div class="tooltip">Si consiglia un aspect ratio di 16:9 per le immagini personalizzate.</div>
+					</div>
+				</div><br/>
+
+				<label for="tipologia">Seleziona una tipologia:</label>
+				<select id="tipologia" th:field="*{tipologia}" required>
+					<option value="" disabled selected>Seleziona una tipologia</option>
+					<option value="Smartphone">Smartphone</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Tablet">Tablet</option>
+                    <option value="Auricolari">Auricolari</option>
+                    <option value="Cuffie">Cuffie</option>
+                    <option value="Console">Console</option>
+				</select><br/>
+		
+				<button type="submit">Crea</button>
+			</form>
+		</div>
+	</main>
+	<footer>
+		<p>&copy; 2025 Catalogo Prodotti - Progetto per Sistemi Informativi su Web</p>
+		<p>Realizzato da Luca Monaco | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+	</footer>
+	<script>
+		// Gestione della selezione dell'immagine personalizzata
+		document.addEventListener("DOMContentLoaded", function () {
+			const fileInput = document.getElementById("customImage");
+			const radioInputs = document.querySelectorAll("input[name='imagePath']");
+
+			fileInput.addEventListener("change", function () {
+				if (fileInput.files.length > 0) {
+					// Deseleziona tutti i radio
+					radioInputs.forEach(r => r.checked = false);
+
+					// Crea o seleziona un radio invisibile per "custom"
+					let customRadio = document.querySelector("input[name='imagePath'][value='custom']");
+					if (!customRadio) {
+						customRadio = document.createElement("input");
+						customRadio.type = "radio";
+						customRadio.name = "imagePath";
+						customRadio.value = "custom";
+						customRadio.hidden = true;
+						customRadio.required = false;
+						fileInput.parentNode.appendChild(customRadio);
+					}
+					customRadio.checked = true;
+				}
+			});
+		});
+	</script>
+</body>
+</html>

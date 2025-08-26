@@ -9,11 +9,18 @@
 </head>
 <body>
     <h1>Home</h1>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+    <p th:if="${isAdmin}">Sei loggato come amministratore.</p>
+    <a th:if="${isAdmin}" th:href="@{/prodotti/new}">Aggiungi nuovo prodotto</a>
     <p>Benvenuto nel catalogo prodotti!<br>Ecco tutti i nostri prodotti disponibili:</p>
     <ul th:each="prodotto : ${prodotti}">
-        <a th:href="@{'/prodotti/' + ${prodotto.id}}">
-            <li th:text="${prodotto.nome}">Dettagli</li>
-        </a>
+        <li>
+            <span th:text="${prodotto.nome}">Nome prodotto</span>
+            <a th:href="@{'/prodotti/' + ${prodotto.id}}">Dettagli</a>
+            <a th:if="${isAdmin}" th:href="@{'/prodotti/' + 'edit/' + ${prodotto.id}}">Modifica</a>
+        </li>
     </ul>
 </body>
 </html>

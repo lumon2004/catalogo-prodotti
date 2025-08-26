@@ -8,16 +8,32 @@
     <link rel="stylesheet" href="/css/login.css">
 </head>
 <body>
-    <h1>Login</h1>
-    <form th:action="@{/login}" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <button type="submit">Login</button>
-    </form>
+    <header><h1>Catalogo Prodotti</h1></header>
+    <main>
+        <h2>Accedi al tuo account</h2>
+        <form th:action="@{/login}" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit">Login</button>
+        </form>
+        <!-- Messaggi di errore o successo -->
+        <div th:if="${param.error}">
+            <p style="color:red;">Username o password errati</p>
+        </div>
+        <div th:if="${param.logout}">
+            <p style="color:green;">Sei uscito con successo</p>
+        </div>
+        <!-- Link per la registrazione -->
+        <p>Non hai un account? <a th:href="@{/utenti/new}">Registrati qui</a></p>
+    </main>
+    <footer>
+        <p>&copy; 2025 Catalogo Prodotti - Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
+        <p>Realizzato da Luca Monaco | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+    </footer>
 </body>
 </html>

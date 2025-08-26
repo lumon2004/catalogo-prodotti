@@ -42,13 +42,13 @@ public class CommentoController {
      * @return Il redirect alla pagina dell'evento dopo l'aggiunta del commento.
      */
     @PostMapping("/prodotti/{id}/commenta")
-    public String aggiungiCommento(@PathVariable("id") Long eventoId, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model, @RequestParam("contenuto") String contenuto) {
+    public String aggiungiCommento(@PathVariable("id") Long prodottoId, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model, @RequestParam("contenuto") String contenuto) {
         if (utenteDetails != null) {
             model.addAttribute("username", utenteDetails.getUsername());
             // puoi accedere a utenteDetails.getUtente() per info aggiuntive
         }
 
-        Prodotto prodotto = prodottoService.findById(eventoId).orElse(null);
+        Prodotto prodotto = prodottoService.findById(prodottoId).orElse(null);
         if (utenteDetails == null) {
             return "redirect:/login";
         }
@@ -64,6 +64,27 @@ public class CommentoController {
             commentoService.save(commento);
         }
 
-        return "redirect:/prodotti/" + eventoId;
+        return "redirect:/prodotti/" + prodottoId;
+    }
+
+    /**
+     * Modifica un commento esistente.
+     * @param id L'ID del commento da modificare.
+     * @param utenteDetails I dettagli dell'utente autenticato.
+     * @param testo Il nuovo testo del commento.
+     * @return Il redirect alla pagina del prodotto dopo la modifica del commento.
+     */
+    @PostMapping("/commenti/{id}/edit")
+    public String modificaCommento(@PathVariable("id") Long id,
+                                   @AuthenticationPrincipal UtenteDetails utenteDetails,
+                                   @RequestParam("testo") String testo) {
+        Commento commento = commentoService.findById(id).orElse(null);
+        if (commento != null && utenteDetails != null &&
+            commento.getAutore().getId().equals(utenteDetails.getUtente().getId())) {
+            commento.setTesto(testo);
+            commentoService.save(commento);
+            return "redirect:/prodotti/" + commento.getProdotto().getId();
+        }
+        return "redirect:/home";
     }
 }
