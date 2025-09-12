@@ -1,0 +1,68 @@
+div.user-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+div.user-div p {
+    color: grey;
+}
+
+div.user-div a:hover {
+    text-decoration: none;
+}
+
+div.user-div form > button {
+    border: 0;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: 14px;
+    padding: 5px 15px;
+    border-radius: 15px;
+}
+
+div.tipologie-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(25%, 1fr)); 
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+div.tipologia-blocco {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    width: 95%;
+    min-width: 150px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+div.tipologia-blocco a:hover {
+    text-decoration: none;
+}
+
+div.tipologia-blocco p {
+    text-decoration: none;
+    font-weight: bold;
+    background-color: var(--tertiary-color);
+    padding: 10px 15px;
+    color: #fff;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+    width: max-content;
+    margin: 0 auto;
+}
+
+div.tipologia-blocco:hover p {
+    background-color: var(--primary-color);
+}
+
+img.tipologia-immagine {
+    width: 100%;
+    height: auto;
+    margin-bottom: 0.5rem;
+}

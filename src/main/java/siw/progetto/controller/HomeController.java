@@ -30,10 +30,16 @@ public class HomeController {
     @GetMapping("/home")
     public String home(@AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
         Utente utente = utenteDetails.getUtente();
-
         List<Prodotto> tutti = prodottoService.findAll();
+        List<String> tipologie = prodottoService.findAllTipologieOrdinate();
+        List<String> marche = prodottoService.findAllMarcheOrdinate();
+        List<Integer> anni = prodottoService.findAllAnniOrdinati();
+        
         model.addAttribute("utente", utente);
         model.addAttribute("prodotti", tutti);
+        model.addAttribute("tipologie", tipologie);
+        model.addAttribute("marche", marche);
+        model.addAttribute("anni", anni);
         model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
         return "home";
     }
@@ -43,7 +49,7 @@ public class HomeController {
      * @return Il redirect alla pagina di login.
      */
     @GetMapping("/")
-    public String redirectToLogin() {
-        return "redirect:/login";
+    public String redirectToHome() {
+        return "redirect:/home";
     }
 }

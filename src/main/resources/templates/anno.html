@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${anno}">1970</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"/>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/tipologia.css">
+    <script src="/js/sidebar.js" defer></script>
+    <script src="/js/filtri.js" defer></script>
+</head>
+<body>
+    <header>
+        <span class="material-symbols-rounded" onclick="toggleSidebar()">dehaze</span>
+        <h1><a href="/">Catalogo Prodotti</a></h1>
+    </header>
+	<!-- Sidebar primaria -->
+	<div id="sidebar" class="sidebar">
+		<a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()"><span class="material-symbols-rounded">close</span></a>
+		<p>Naviga per:</p>
+		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item">
+			<a th:href="@{/prodotti}" style="padding: 0;">Tutti i prodotti</a>
+		</div>
+	</div>
+	<!-- Sidebar secondaria -->
+	<div id="sidebar-secondary" class="sidebar sidebar-secondary" aria-hidden="true">
+		<div class="secondary-inner">
+			<!-- Tipologie -->
+			<div class="submenu" id="submenu-tipologie">
+				<a th:each="tip : ${tipologie}" th:href="@{'/tipologia/' + ${tip.toLowerCase()}}" th:text="${tip.toLowerCase() == 'tv' ? tip.toUpperCase() : #strings.capitalizeWords(tip.toLowerCase())}">Tipologia</a>
+			</div>
+			<!-- Marche -->
+			<div class="submenu" id="submenu-marche">
+				<a th:each="marca : ${marche}" th:href="@{'/marca/' + ${marca.toLowerCase()}}" th:text="${marca.toLowerCase() == 'hp' || marca.toLowerCase() == 'lg' || marca.toLowerCase() == 'tcl' ? marca.toUpperCase() : #strings.capitalizeWords(marca.toLowerCase())}">Marca</a>
+			</div>
+			<!-- Anni -->
+			<div class="submenu" id="submenu-anni">
+				<a th:each="anno : ${anni}" th:href="@{'/anno/' + ${anno}}" th:text="${anno}">Anno</a>
+			</div>
+		</div>
+	</div>
+    <!-- Barra di navigazione per tipologia -->
+    <nav class="tipologie-nav">
+        <!-- Link per ogni tipologia -->
+        <a th:each="tipologia : ${tipologie}" th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}" th:text="${tipologia.toLowerCase() == 'tv' ? tipologia.toUpperCase() : #strings.capitalizeWords(tipologia.toLowerCase())}">Tipologia</a>
+    </nav>
+    <main>
+        <h2 th:text="${anno}">Anno</h2>
+        <div class="filtri-container">
+            <label>Ordina per:</label>
+            <button class="filtro-btn" data-key="nome" data-order="asc">Nome ↑</button>
+            <button class="filtro-btn" data-key="marca" data-order="asc">Marca ↑</button>
+            <button class="filtro-btn" data-key="anno" data-order="asc">Anno ↑</button>
+            <button class="filtro-btn" data-key="prezzo" data-order="asc">Prezzo ↑</button>
+        </div>
+        <div th:if="${prodotti != null and !prodotti.isEmpty()}" class="prodotti-container">
+            <div th:each="prodotto : ${prodotti}" class="prodotto-blocco">
+                <a th:href="@{'/prodotti/' + ${prodotto.id}}">
+                    <!-- Mostra i dettagli di ogni prodotto -->
+                    <img th:src="@{'/uploads/' + ${prodotto.tipologia} + '/' +  ${prodotto.nome} + '.jpg'}" th:alt="${prodotto.nome}" class="prodotto-immagine"/>
+                    <div class="info-prodotto">
+                        <h3 th:text="${prodotto.nome}">Nome prodotto</h3>
+                        <p><strong>Marca:</strong> <span th:text="${prodotto.marca}">Marca</span></p>
+                        <p><strong>Anno:</strong> <span th:text="${prodotto.anno}">Anno</span></p>
+                        <p><strong>Descrizione:</strong> <span th:text="${prodotto.descrizione}">Descrizione</span></p>
+                    </div>
+                    <div class="prezzo">
+                        <p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div th:if="${prodotti == null or prodotti.isEmpty()}">
+            <p>Nessun prodotto del <span th:text="${anno}">1970</span> trovato.</p>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 Catalogo Prodotti</p>
+        <p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
+        <p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+    </footer>
+</body>
+</html>

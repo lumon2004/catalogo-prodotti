@@ -1,0 +1,214 @@
+:root {
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    --background-color: #f4f4f4;
+    --text-color: #333;
+    --primary-color: /*#2f7af6*/rgb(47, 122, 34);
+    --secondary-color: rgb(103, 163, 47);
+    --tertiary-color: rgb(132, 181, 72);
+    --footer-background-color: #e6e6e6;
+    --footer-text-color: #8f8f8f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #1a1a1a;
+    --text-color: #fff;
+    --primary-color: #2f7af6;
+    /*--primary-color: #0049c2;*/
+    --secondary-color: #999;
+    --footer-background-color: #2e2e2e;
+    --footer-text-color: #dfdfdf;
+  }
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    font-family: var(--font-family);
+    width: 100%;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+main {
+    flex: 1; /* prende tutto lo spazio disponibile */
+    width: 90%;
+    margin: 0 auto;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: #fff;
+    text-align: center;
+    padding: 20px 1.5%;
+    display: flex;
+    align-items: center;
+}
+
+.material-symbols-rounded {
+    font-size: 32px;
+    cursor: pointer;
+}
+
+.sidebar, .sidebar-secondary {
+    top: 0;
+    bottom: 0;
+    height: 100vh; /* più sicuro di 100% per fixed elements */
+}
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    width: 0px;
+    background-color: var(--primary-color);
+    overflow-x: hidden;
+    transition: width 0.25s ease;
+    padding-top: 60px;
+    z-index: 1000;
+}
+
+/* Quando attiva */
+.sidebar.active {
+    width: 250px;
+}
+
+/* Pulsante di chiusura */
+.sidebar .closebtn {
+    position: absolute;
+    top: 15px;
+    right: 0px;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+.sidebar p {
+    color: rgb(186, 186, 186);
+    margin: 10px 15px;
+    margin-top: 25px;
+}
+
+/* SECONDARY (nuovo/aggiornato) */
+.sidebar-secondary {
+    background-color: var(--secondary-color);
+    position: fixed;         /* <- era mancante */
+    top: 0;
+    bottom: 0;
+    left: 250px;             /* si allinea appena a destra della primaria */
+    width: 0;                /* chiusa per default */
+    overflow-y: auto;
+    max-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; /* limita propagation dello scroll */
+    transition: width 0.25s ease;
+    z-index: 1001;
+    pointer-events: none;    /* non riceve eventi quando è "chiusa" */
+    padding-top: 0;
+}
+/* quando è visibile */
+.sidebar-secondary.active {
+    width: 250px;
+    pointer-events: auto;
+}
+
+.secondary-inner {
+    height: 100vh;
+    box-sizing: border-box;
+    padding-top: 60px;
+    padding-bottom: 30px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; /* riduce lo scroll chaining */
+}
+
+.submenu {
+    display: none;
+    padding-bottom: 30px;
+}
+
+.sidebar-item {
+    padding: 10px 15px;
+    font-size: 18px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Link dentro entrambi le sidebar */
+.sidebar a, .submenu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    font-size: 18px;
+    color: #fff;
+    display: block;
+    transition: 0.2s;
+}
+
+header > h1 > a {
+    color: #fff;
+}
+
+header > h1 > a:hover {
+    text-decoration: none;
+}
+
+header > h1 {
+    margin: 0 auto;
+}
+
+nav.tipologie-nav {
+    background-color: var(--secondary-color);
+    padding: 10px 1.5%;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+nav.tipologie-nav a {
+    color: #fff;
+    margin: 0;
+    font-weight: bold;
+}
+
+nav.tipologie-nav a:hover {
+    text-decoration: none;
+}
+
+footer {
+    background-color: var(--footer-background-color);
+    color: var(--footer-text-color);
+    text-align: center;
+    padding: 10px 1.5%;
+}
+
+footer p {
+    margin: 10px auto;
+}
+
+footer a {
+    color: var(--footer-text-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}

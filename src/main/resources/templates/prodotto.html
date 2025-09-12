@@ -1,39 +1,92 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title th:text="${prodotto.nome}">Dettagli Prodotto</title>
-		<link rel="stylesheet" href="/css/style.css">
-		<link rel="stylesheet" href="/css/prodotto.css">
-	</head>
-	<body>
-		<h1 th:text="${prodotto.nome}">Dettagli Prodotto</h1>
-		<p th:text="${prodotto.descrizione}">Descrizione Prodotto</p>
-		<p>Prezzo: <span th:text="${prodotto.prezzo}">0.00</span> €</p>
-		<img th:src="@{${prodotto.fullImageUrl}}" alt="Immagine Prodotto">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title th:text="${prodotto.nome}">Dettagli Prodotto</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"/>
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/prodotto.css">
+    <script src="/js/sidebar.js" defer></script>
+    <script src="/js/commenti.js" defer></script>
+</head>
+<body>
+	<header>
+        <span class="material-symbols-rounded" onclick="toggleSidebar()">dehaze</span>
+        <h1><a href="/">Catalogo Prodotti</a></h1>
+    </header>
+	<!-- Sidebar primaria -->
+	<div id="sidebar" class="sidebar">
+		<a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()"><span class="material-symbols-rounded">close</span></a>
+		<p>Naviga per:</p>
+		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item">
+			<a th:href="@{/prodotti}" style="padding: 0;">Tutti i prodotti</a>
+		</div>
+	</div>
+	<!-- Sidebar secondaria -->
+	<div id="sidebar-secondary" class="sidebar sidebar-secondary" aria-hidden="true">
+		<div class="secondary-inner">
+			<!-- Tipologie -->
+			<div class="submenu" id="submenu-tipologie">
+				<a th:each="tip : ${tipologie}" th:href="@{'/tipologia/' + ${tip.toLowerCase()}}" th:text="${tip.toLowerCase() == 'tv' ? tip.toUpperCase() : #strings.capitalizeWords(tip.toLowerCase())}">Tipologia</a>
+			</div>
+			<!-- Marche -->
+			<div class="submenu" id="submenu-marche">
+				<a th:each="marca : ${marche}" th:href="@{'/marca/' + ${marca.toLowerCase()}}" th:text="${marca.toLowerCase() == 'hp' || marca.toLowerCase() == 'lg' || marca.toLowerCase() == 'tcl' ? marca.toUpperCase() : #strings.capitalizeWords(marca.toLowerCase())}">Marca</a>
+			</div>
+			<!-- Anni -->
+			<div class="submenu" id="submenu-anni">
+				<a th:each="anno : ${anni}" th:href="@{'/anno/' + ${anno}}" th:text="${anno}">Anno</a>
+			</div>
+		</div>
+	</div>
+    <!-- Barra di navigazione per tipologia -->
+	<nav class="tipologie-nav">
+        <!-- Link per ogni tipologia -->
+		<a th:each="tipologia : ${tipologie}" th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}" th:text="${tipologia.toLowerCase() == 'tv' ? tipologia.toUpperCase() : #strings.capitalizeWords(tipologia.toLowerCase())}">Tipologia</a>
+	</nav>
+	<main>
+		<div class="info">
+            <img th:src="@{'/uploads/' + ${prodotto.tipologia} + '/' +  ${prodotto.nome} + '.jpg'}" th:alt="${prodotto.nome}" class="prodotto-immagine"/>
+			<div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2 th:text="${prodotto.nome}">Dettagli Prodotto</h2>
+                    <p id="prezzo" th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
+                </div>
+                <h3 th:text="${prodotto.marca} + ' (' + ${prodotto.anno} + ')'">Marca (Anno)</h3>
+				<p th:text="${prodotto.descrizione}">Descrizione Prodotto</p>
+			</div>
+		</div>			
 		<h2>Prodotti simili</h2>
-		<ul>
-			<li th:each="prodottoSimile : ${prodottiSimili}">
-				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}" th:text="${prodottoSimile.nome}">Nome Prodotto Simile</a>
-			</li>
-		</ul>
-		<h3>Commenti</h3>
-		<h4><span th:text="${#lists.size(prodotto.commenti)}">0</span> commenti</h4>
+		<div th:if="${#lists.isEmpty(prodottiSimili)}">
+			<p>Nessun prodotto simile trovato.</p>
+		</div>
+		<div th:if="${!#lists.isEmpty(prodottiSimili)}">
+            <div th:each="prodottoSimile : ${prodottiSimili}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
+                <a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
+                    <img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
+                    <h4 th:text="${prodottoSimile.nome}">Nome Prodotto</h4>
+                    <p th:text="${prodottoSimile.marca} + ' (' + ${prodottoSimile.anno} + ')'">Marca (Anno)</p>
+                    <p th:text="${#numbers.formatDecimal(prodottoSimile.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
+                </a>
+            </div>
+        </div>
+		<h2>Commenti (<span th:text="${#lists.size(prodotto.commenti)}">0</span>)</h2>
 		<form th:action="@{'/prodotti/' + ${prodotto.id} + '/commenta'}" method="post" id="commentForm">
 			<div id="commentInput" contenteditable="true" data-placeholder="Scrivi un commento..."></div>
 			<input type="hidden" name="contenuto" id="hiddenContent" required><br>
 			<button type="submit">Invia</button>
 			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 		</form>
-		<!-- Sezione commenti modificata -->
+		<!-- Sezione commenti -->
 		<div th:unless="${#lists.isEmpty(prodotto.commenti)}" id="commentList">
 			<ul>
-				<li th:each="commento : ${prodotto.commenti}" class="comment-item">
-					
+				<li th:each="commento : ${prodotto.commenti}" class="comment-item">					
 					<!-- Nome utente -->
-					<strong th:text="${commento.autore.username}">Autore</strong>
-					
+					<strong th:text="${'@' + commento.autore.username}">Autore</strong>
 					<!-- Contenuto del commento -->
 					<div class="comment-content">
 						<!-- Testo del commento (visibile normalmente) -->
@@ -42,7 +95,7 @@
 						<!-- Form di modifica (nascosto di default) -->
 						<form th:if="${utente != null and utente.id == commento.autore.id}" class="edit-form" th:id="'edit-form-' + ${commento.id}" th:action="@{/commenti/{id}/edit(id=${commento.id})}" method="post" style="display: none;">
 							<textarea class="edit-textarea" name="testo" th:text="${commento.testo}" placeholder="Modifica il tuo commento..."></textarea>
-							<div>
+							<div style="margin-left: 10px;">
 								<button type="submit">Salva</button>
 								<button type="button" th:onclick="'cancelEdit(' + ${commento.id} + ')'">Annulla</button>
 							</div>
@@ -66,7 +119,7 @@
 				
 				// Nascondi il testo del commento e mostra il form
 				commentText.style.display = 'none';
-				editForm.style.display = 'block';
+				editForm.style.display = 'flex';
 				
 				// Nascondi il pulsante modifica
 				editButton.style.display = 'none';
@@ -94,96 +147,11 @@
 				textarea.value = originalText;
 			}
 		</script>
-		<footer>
-			<p>&copy; 2025 Catalogo Prodotti - Progetto per Sistemi Informativi su Web</p>
-			<p>Realizzato da Luca Monaco | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
-		</footer>
-		<script>
-			// Gestione del form di commento
-			document.addEventListener('DOMContentLoaded', function() {
-				const commentInput = document.getElementById('commentInput');
-				const hiddenContent = document.getElementById('hiddenContent');
-				const form = document.getElementById('commentForm');
-				const submitButton = form.querySelector('button[type="submit"]');
-				
-				// Inizialmente disabilita il button
-				updateButtonState();
-				
-				// Funzione per aggiornare lo stato del button
-				function updateButtonState() {
-					const content = commentInput.innerText.trim();
-					if (content.length === 0) {
-						submitButton.disabled = true;
-						submitButton.classList.add('disabled');
-					} else {
-						submitButton.disabled = false;
-						submitButton.classList.remove('disabled');
-					}
-				}
-				
-				// Aggiorna il campo nascosto e lo stato del button quando il contenuto cambia
-				commentInput.addEventListener('input', function() {
-					hiddenContent.value = this.innerText.trim();
-					if (commentInput.innerText.trim().length === 0) {
-						commentInput.innerHTML = '';
-					}
-					updateButtonState();
-				});
-				
-				// Aggiorna anche quando si perde il focus (per sicurezza)
-				commentInput.addEventListener('blur', function() {
-						updateButtonState();
-					});
-					
-					// Validazione al submit
-					form.addEventListener('submit', function(e) {
-						const content = commentInput.innerText.trim();
-						if (!content) {
-							e.preventDefault();
-							alert('Inserisci un commento prima di inviare!');
-							commentInput.focus();
-						} else {
-							hiddenContent.value = content;
-						}
-					});
-					
-					// Gestisce Enter per andare a capo
-					commentInput.addEventListener('keydown', function(e) {
-						if (e.key === 'Enter' && !e.shiftKey) {
-							// Permette di andare a capo con solo Enter
-						}
-					});
-				});
-		</script>
-		<script>
-			// Funzione per convertire la data in un formato "tempo fa"
-			function timeAgo(date) {
-				const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-				const intervals = [
-					{ labelSing: 'secondo', labelPlur: 'secondi', seconds: 1 },
-					{ labelSing: 'minuto', labelPlur: 'minuti', seconds: 60 },
-					{ labelSing: 'ora', labelPlur: 'ore', seconds: 3600 },
-					{ labelSing: 'giorno', labelPlur: 'giorni', seconds: 86400 },
-					{ labelSing: 'mese', labelPlur: 'mesi', seconds: 2592000 },
-					{ labelSing: 'anno', labelPlur: 'anni', seconds: 31536000 }
-				];
-
-				for (const i of intervals.reverse()) {
-					const count = Math.floor(seconds / i.seconds);
-					if (count > 0) {
-						return count + ' ' + (count === 1 ? i.labelSing : i.labelPlur) + ' fa';
-					}
-				}
-				return 'adesso';
-			}
-
-			// Aggiorna i commenti con il tempo trascorso
-			document.addEventListener("DOMContentLoaded", function () {
-				document.querySelectorAll('.comment-time').forEach(el => {
-					const isoTime = el.getAttribute('data-timestamp');
-					el.textContent = timeAgo(isoTime);
-				});
-			});
-		</script>
-	</body>
+	</main>
+    <footer>
+        <p>&copy; 2025 Catalogo Prodotti</p>
+        <p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
+        <p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+    </footer>
+</body>
 </html>

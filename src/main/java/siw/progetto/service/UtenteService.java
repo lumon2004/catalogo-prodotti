@@ -31,6 +31,7 @@ public class UtenteService {
     // Metodo per salvare un utente
     // Codifica la password prima di salvarla nel database tramite PasswordEncoder
     public Utente save(Utente utente) {
+        System.out.println(">>> Salvataggio utente: " + utente.getUsername() + ", " + utente.getEmail());
         String rawPassword = utente.getPassword();
         String encodedPassword = passwordEncoder.encode(rawPassword);
         utente.setPassword(encodedPassword);

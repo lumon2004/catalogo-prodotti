@@ -22,8 +22,16 @@ public class Prodotto {
     @Column(nullable = false)
     private Double prezzo;
 
+    // L'attributo anno non può essere nullo
+    @Column(nullable = false)
+    private Integer anno;
+
+    // L'attributo marca non può essere nullo
+    @Column(nullable = false)
+    private String marca;
+
     // L'attributo descrizione può essere nullo
-    @Column(nullable = true)
+    @Column(nullable = true, columnDefinition = "TEXT")
     private String descrizione;
 
     // L'attributo tipologia non può essere nullo
@@ -66,6 +74,18 @@ public class Prodotto {
     public void setPrezzo(Double prezzo) {
         this.prezzo = prezzo;
     }
+    public Integer getAnno() {
+        return this.anno;
+    }
+    public void setAnno(Integer anno) {
+        this.anno = anno;
+    }
+    public String getMarca() {
+        return this.marca;
+    }
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
     public String getDescrizione() {
         return this.descrizione;
     }
@@ -100,7 +120,7 @@ public class Prodotto {
         if (this.imagePath != null && this.imagePath.startsWith("default-")) {
             return "/img/" + this.imagePath;
         } else {
-            return "/uploads/" + this.imagePath;
+            return "/uploads/" + this.tipologia.toLowerCase() + this.imagePath;
         }
     }
 
