@@ -41,6 +41,12 @@ div.prodotto-blocco {
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
+@media (prefers-color-scheme: dark) {
+    div.prodotto-blocco {
+        background-color: #333;
+    }
+}
+
 div.prodotto-blocco > a {
     width: 100%;
     display: inherit;
@@ -53,6 +59,7 @@ div.prodotto-blocco > a:hover {
 
 div.prodotto-blocco div.info-prodotto {
     width: 55%;
+    margin-left: 1rem;
 }
 
 div.prodotto-blocco div.prezzo {
@@ -80,4 +87,5 @@ img.prodotto-immagine {
     aspect-ratio: 1 / 1;
     object-fit: cover; /* riempie il quadrato senza deformare */
     display: block;
+    border-radius: 10px;
 }
