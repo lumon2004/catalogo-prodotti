@@ -14,6 +14,15 @@
 		<!-- Form di creazione di un nuovo prodotto -->
 		<div class="container">
 			<h2>Aggiungi un nuovo prodotto</h2>
+
+            <!-- Errori -->
+            <div th:if="${error == 'duplicate'}"  class="alert alert-danger">
+                <p>⚠️ Esiste già un prodotto con questo nome. Inserisci un nome diverso.</p>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger">
+                <p th:text="${errorMessage}"></p> <!-- Messaggio di errore generico (dimensione upload) -->
+            </div>
+
 			<form th:action="@{/prodotti/new}" method="post" th:object="${prodotto}" enctype="multipart/form-data">
 				<label for="title">Inserisci il nome del prodotto:</label><br/>
 				<input type="text" id="title" th:field="*{nome}" required placeholder="Nome"/><br/>
@@ -21,54 +30,31 @@
 				<label for="description">Inserisci una descrizione: (facoltativo)</label><br/>
 				<textarea id="description" th:field="*{descrizione}" placeholder="Descrizione"></textarea><br/>
 
-				<label for="location">Inserisci il prezzo del prodotto:</label><br/>
-				<input type="text" id="location" th:field="*{prezzo}" required placeholder="Prezzo"/><br/>
-		
-				<label for="imagePath">Seleziona una copertina per l'evento:</label><br/>
-				<div class="image-selector" th:field="*{imagePath}">
-					<label>
-						<input type="radio" name="imagePath" value="Smartphone.jpg" hidden/>
-						<img src="/img/default-smartphone.jpg" alt="Smartphone" />
-					</label>
-					<label>
-						<input type="radio" name="imagePath" value="Laptop.jpg" hidden/>
-						<img src="/img/default-laptop.jpg" alt="Laptop" />
-					</label>
-					<label>
-						<input type="radio" name="imagePath" value="Tablet.jpg" hidden/>
-						<img src="/img/default-tablet.jpg" alt="Tablet" />
-					</label>
-					<label>
-						<input type="radio" name="imagePath" value="Auricolari.jpg" hidden/>
-						<img src="/img/default-auricolari.jpg" alt="Auricolari" />
-					</label>
-					<label>
-						<input type="radio" name="imagePath" value="Cuffie.jpg" hidden/>
-						<img src="/img/default-cuffie.jpg" alt="Cuffie" />
-					</label>
-					<label>
-						<input type="radio" name="imagePath" value="Console.jpg" hidden/>
-						<img src="/img/default-console.jpg" alt="Console" />
-					</label>
-					<div style="display: flex; align-items: center; position: relative;">
-						<label for="customImage" style="width: 70%">
-							<input type="file" id="customImage" name="customImage" accept="image/*">
-						</label>
-						<span class="material-symbols-rounded" style="margin-left: 5%; margin-bottom: 2%;">info</span>
-						<div class="tooltip">Si consiglia un aspect ratio di 16:9 per le immagini personalizzate.</div>
-					</div>
+				<label for="price">Inserisci il prezzo del prodotto:</label><br/>
+				<input type="number" id="price" th:field="*{prezzo}" step="0.01" min="0" required placeholder="Prezzo"/><br/>
+
+                <label for="brand">Inserisci la marca del prodotto:</label><br/>
+                <input type="text" id="brand" th:field="*{marca}" required placeholder="Marca"/><br/>
+
+                <label for="year">Inserisci l'anno di rilascio del prodotto:</label><br/>
+                <input type="number" id="year" th:field="*{anno}" required placeholder="Anno di rilascio" min="1970" max="2025"/><br/>
+
+				<label for="imagePath">Aggiungi un immagine per il prodotto:</label><br/>
+				<div class="image-selector">
+                    <input type="hidden" th:field="*{imagePath}"/>
+                    <label for="customImage" style="width: 70%">
+                        <input type="file" id="customImage" name="customImage" accept="image/*">
+                    </label>
+                    <span class="material-symbols-rounded">info</span>
+                    <div class="tooltip">Si consiglia un aspect ratio di 1:1.</div>
 				</div><br/>
 
 				<label for="tipologia">Seleziona una tipologia:</label>
-				<select id="tipologia" th:field="*{tipologia}" required>
-					<option value="" disabled selected>Seleziona una tipologia</option>
-					<option value="Smartphone">Smartphone</option>
-                    <option value="Laptop">Laptop</option>
-                    <option value="Tablet">Tablet</option>
-                    <option value="Auricolari">Auricolari</option>
-                    <option value="Cuffie">Cuffie</option>
-                    <option value="Console">Console</option>
-				</select><br/>
+                <select id="tipologia" th:field="*{tipologia}" required>
+                    <option value="" disabled selected>Seleziona una tipologia</option>
+                    <option th:each="tipo : ${tipologie}" th:value="${tipo}" th:text="${tipo.charAt(0) + tipo.substring(1).toLowerCase()}">
+                    </option>
+                </select><br/>
 		
 				<button type="submit">Crea</button>
 			</form>
@@ -78,32 +64,5 @@
 		<p>&copy; 2025 Catalogo Prodotti - Progetto per Sistemi Informativi su Web</p>
 		<p>Realizzato da Luca Monaco | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
 	</footer>
-	<script>
-		// Gestione della selezione dell'immagine personalizzata
-		document.addEventListener("DOMContentLoaded", function () {
-			const fileInput = document.getElementById("customImage");
-			const radioInputs = document.querySelectorAll("input[name='imagePath']");
-
-			fileInput.addEventListener("change", function () {
-				if (fileInput.files.length > 0) {
-					// Deseleziona tutti i radio
-					radioInputs.forEach(r => r.checked = false);
-
-					// Crea o seleziona un radio invisibile per "custom"
-					let customRadio = document.querySelector("input[name='imagePath'][value='custom']");
-					if (!customRadio) {
-						customRadio = document.createElement("input");
-						customRadio.type = "radio";
-						customRadio.name = "imagePath";
-						customRadio.value = "custom";
-						customRadio.hidden = true;
-						customRadio.required = false;
-						fileInput.parentNode.appendChild(customRadio);
-					}
-					customRadio.checked = true;
-				}
-			});
-		});
-	</script>
 </body>
 </html>

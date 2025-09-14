@@ -1,0 +1,103 @@
+body {
+    background-color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: white;
+    }
+}
+
+div.container {
+    border: 2px solid var(--primary-color);
+    padding: 20px 50px;
+    margin: 50px 12.5%;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f4f4f4;
+}
+
+@media (prefers-color-scheme: dark) {
+    div.container {
+        background-color: #1e1e1e;
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    }
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
+
+div.container > form > input[type="text"], div.container > form > input[type="number"], div.container > form > textarea {
+    border: 1px solid var(--primary-color);
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin: 10px 0;
+    width: 70%;
+}
+
+div.container > form > textarea {
+    height: 17px;
+}
+
+div.container > form > input[type="text"]:focus, div.container > form > input[type="number"]:focus, div.container > form > textarea:focus {
+    outline: none;
+    border: 2px solid var(--primary-color);
+}
+
+div.image-selector {
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+div.tooltip {
+    font-size: 14px;
+    visibility: hidden;
+    text-align: center;
+    position: absolute;
+    left: auto;
+    right: 21.5%;
+    opacity: 0;
+    transition: visibility 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+span.material-symbols-rounded:hover ~ div.tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+button[type="submit"] {
+    border: none;
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+}
+
+button[type="submit"]:hover {
+    background-color: var(--secondary-color);
+}
+
+button.removeImage {
+    border: 0;
+    padding: 5px 15px;
+    background-color: lightgrey;
+    color: red;
+    border-radius: 20px;
+    margin-right: 5%;
+    cursor: pointer;
+}

@@ -1,6 +1,7 @@
 package siw.progetto.model;
 
 import java.util.*;
+
 import jakarta.persistence.*;
 
 @Entity

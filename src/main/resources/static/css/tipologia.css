@@ -48,7 +48,7 @@ div.prodotto-blocco {
 }
 
 div.prodotto-blocco > a {
-    width: 100%;
+    width: 80%;
     display: inherit;
     color: var(--text-color);
 }
@@ -58,7 +58,7 @@ div.prodotto-blocco > a:hover {
 }
 
 div.prodotto-blocco div.info-prodotto {
-    width: 55%;
+    width: 70%;
     margin-left: 1rem;
 }
 
@@ -74,13 +74,48 @@ div.prodotto-blocco div.prezzo span {
     font-size: 48px;
 }
 
+div.admin-actions {
+    margin-top: 100px;
+}
+
+div.admin-actions {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+div.admin-actions a.btn.btn-primary, div.admin-actions button[type="submit"].btn.btn-danger {
+    padding: 5px 15px;
+    border-radius: 20px;
+    border: 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+div.admin-actions a.btn.btn-primary:hover, div.admin-actions button[type="submit"].btn.btn-danger:hover {
+    text-decoration: none;
+}
+
+div.admin-actions a.btn.btn-primary {
+    color: #fff;
+    background-color: var(--primary-color);
+}
+
+div.admin-actions button[type="submit"].btn.btn-danger {
+    color: red;
+    background-color: lightgrey;
+}
+
+div.prodotto-blocco:hover div.admin-actions {
+    visibility: visible;
+    opacity: 1;
+}
+
 div.prodotto-blocco h3 {
     font-weight: bold;
     color: var(--text-color);
     transition: 0.3s;
 }
-
-div.prodotto-blocco 
 
 img.prodotto-immagine {
     width: 25%;

@@ -3,87 +3,98 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Modifica Prodotto</title>
+	<title>Modifica un prodotto</title>
 	<link rel="stylesheet" href="/css/style.css">
 	<link rel="stylesheet" href="/css/nuovoProdotto.css">
+	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet"/>
 </head>
 <body>
-    <h2>Modifica prodotto</h2>
-    <p>Compila il modulo per modificare un prodotto esistente.</p>
-    <form th:action="@{/prodotti/update}" th:object="${prodotto}" method="post" enctype="multipart/form-data">
-        <input type="hidden" th:field="*{id}" />
-        <label for="nome">Nome:</label>
-        <input type="text" id="nome" th:field="*{nome}" required>
+	<header><h1><a href="/home">Catalogo Prodotti</a></h1></header>
+	<main>
+		<!-- Form di modifica di un prodotto -->
+		<div class="container">
+			<h2>Modifica un prodotto</h2>
 
-        <label for="prezzo">Prezzo:</label>
-        <input type="number" id="prezzo" th:field="*{prezzo}" required>
+			<!-- Errori -->
+			<div th:if="${error == 'duplicate'}"  class="alert alert-danger">
+				<p>⚠️ Esiste già un prodotto con questo nome. Inserisci un nome diverso.</p>
+			</div>
+			<div th:if="${errorMessage}" class="alert alert-danger">
+				<p th:text="${errorMessage}"></p> <!-- Messaggio di errore generico (dimensione upload) -->
+			</div>
 
-        <label for="descrizione">Descrizione:</label>
-        <textarea id="descrizione" rows="4" th:field="*{descrizione}"></textarea>
+			<form th:action="@{/prodotti/update}" method="post" th:object="${prodotto}" enctype="multipart/form-data">
+				<!-- ID prodotto nascosto -->
+				<input type="hidden" th:field="*{id}"/>
 
-        <label for="tipologia">Tipologia:</label>
-        <select id="tipologia" th:field="*{tipologia}" required>
-            <option value="Smartphone" th:selected="${prodotto.tipologia == 'Smartphone'}">Smartphone</option>
-            <option value="Laptop" th:selected="${prodotto.tipologia == 'Laptop'}">Laptop</option>
-            <option value="Tablet" th:selected="${prodotto.tipologia == 'Tablet'}">Tablet</option>
-            <option value="Auricolari" th:selected="${prodotto.tipologia == 'Auricolari'}">Auricolari</option>
-            <option value="Cuffie" th:selected="${prodotto.tipologia == 'Cuffie'}">Cuffie</option>
-            <option value="Console" th:selected="${prodotto.tipologia == 'Console'}">Console</option>
-        </select><br/>
+				<label for="title">Aggiorna il nome del prodotto:</label><br/>
+				<input type="text" id="title" th:field="*{nome}" required placeholder="Nome"/><br/>
 
-        <label for="imagePath">Copertina dell'evento:</label><br/>
-            <span>
-                <input type="checkbox" name="removeImage" /> Usa immagine di default
-            </span>
-            <div class="image-selector" th:field="*{imagePath}">
-                <label>
-                    <input type="radio" name="imagePath" value="Generica.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Generica.jpg'}"/>
-                    <img src="/img/default-generica.jpg" alt="Generica" />
-                </label>
-                <label>
-                    <input type="radio" name="imagePath" value="Smartphone.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Smartphone.jpg'}"/>
-                    <img src="/img/default-smartphone.jpg" alt="Smartphone" />
-                </label>
-                <label>
-                    <input type="radio" name="imagePath" value="Laptop.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Laptop.jpg'}"/>
-                    <img src="/img/default-laptop.jpg" alt="Laptop" />
-                </label>
-                <label>
-                    <input type="radio" name="imagePath" value="Tablet.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Tablet.jpg'}"/>
-                    <img src="/img/default-tablet.jpg" alt="Tablet" />
-                </label>
-                <label>
-                    <input type="radio" name="imagePath" value="Auricolari.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Auricolari.jpg'}"/>
-                    <img src="/img/default-auricolari.jpg" alt="Auricolari" />
-                </label>
-                <label>
-                    <input type="radio" name="imagePath" value="Cuffie.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Cuffie.jpg'}"/>
-                    <img src="/img/default-cuffie.jpg" alt="Cuffie" />
-                </label>
-                </label>
-                <label>
-                    <input type="radio" name="imagePath" value="Console.jpg" hidden
-                        th:checked="${prodotto.imagePath == 'Console.jpg'}"/>
-                    <img src="/img/default-console.jpg" alt="Console" />
-                </label>
-                <div style="display: flex; align-items: center; position: relative;">
-                    <label for="customImage" style="width: 70%">
-                        <input type="file" id="customImage" name="customImage" accept="image/*">
-                    </label>
-                    <span class="material-symbols-rounded" style="margin-left: 5%; margin-bottom: 2%;">info</span>
-                    <div class="tooltip">Si consiglia un aspect ratio di 16:9 per le immagini personalizzate.</div>
-                </div>
-            </div><br/>
+				<label for="description">Aggiorna la descrizione:</label><br/>
+				<textarea id="description" th:field="*{descrizione}" placeholder="Descrizione" style="height: 120px;"></textarea><br/>
 
-            <button type="button" onclick="window.location.href='/home'">Annulla</button>
-            <button type="submit">Salva</button>
-        </div>
-    </form>
+				<label for="price">Aggiorna il prezzo del prodotto:</label><br/>
+				<input type="number" id="price" th:field="*{prezzo}" step="0.01" min="0" required placeholder="Prezzo"/><br/>
+
+				<label for="brand">Aggiorna la marca del prodotto:</label><br/>
+				<input type="text" id="brand" th:field="*{marca}" required placeholder="Marca"/><br/>
+
+				<label for="year">Aggiorna l'anno di rilascio del prodotto:</label><br/>
+				<input type="number" id="year" th:field="*{anno}" required placeholder="Anno di rilascio" min="1970" max="2025"/><br/>
+
+				<!-- Gestione immagine -->
+				<label for="imagePath">Aggiorna l'immagine del prodotto:</label><br/>
+
+				<!-- Preview immagine -->
+				<div class="image-preview">
+					<img id="previewImg" th:src="@{'/uploads/' + ${prodotto.tipologia} + '/' +  ${prodotto.nome} + '.jpg'}" th:alt="${prodotto.nome}" style="width:150px; height:150px; object-fit:cover; border:1px solid #ccc; margin: 0 auto; margin-bottom:10px"/>
+				</div>
+
+				<div class="image-selector">
+					<!-- Campo hidden per il percorso immagine -->
+					<input type="hidden" th:field="*{imagePath}" id="imagePathField"/>
+					<!-- Campo hidden per indicare rimozione immagine -->
+					<input type="hidden" name="removeImage" id="removeImageFlag" value="false"/>
+
+					<label for="customImage" style="margin: 0; margin-left: 20%;">
+						<input type="file" id="customImage" name="customImage" accept="image/*">
+					</label>
+
+					<!-- Button per rimuovere immagine esistente -->
+					<button type="button" onclick="document.getElementById('imagePathField').value=''; document.getElementById('removeImageFlag').value='true'; document.getElementById('previewImg').style.display='none'; document.getElementById('customImage').value='';" class="removeImage">Rimuovi</button>
+
+					<span class="material-symbols-rounded">info</span>
+					<div class="tooltip" style="bottom: -158px">Si consiglia un aspect ratio di 1:1.</div>
+				</div><br/>
+
+				<button type="submit">Salva modifiche</button>
+			</form>
+		</div>
+	</main>
+	<script>
+		const fileInput = document.getElementById('customImage');
+		const preview = document.getElementById('previewImg');
+
+		fileInput.addEventListener('change', function(event) {
+			const file = event.target.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					preview.src = e.target.result; // Mostra la nuova immagine
+					preview.style.display = 'block';
+				};
+				reader.readAsDataURL(file);
+				// Assicura che il campo removeImage sia false se seleziono un file nuovo
+				document.getElementById('removeImageFlag').value = 'false';
+			} else {
+				// Se l'utente annulla il file input
+				preview.style.display = 'none';
+			}
+		});
+	</script>
+	<footer>
+		<p>&copy; 2025 Catalogo Prodotti - Progetto per Sistemi Informativi su Web</p>
+		<p>Realizzato da Luca Monaco | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+	</footer>
 </body>
 </html>

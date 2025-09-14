@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import siw.progetto.model.Prodotto;
+import siw.progetto.model.Utente;
 import siw.progetto.security.UtenteDetails;
 import siw.progetto.service.ProdottoService;
 
@@ -31,18 +32,20 @@ public class TipologiaController {
      */
     @GetMapping("/tipologia/{tipologia}")
     public String mostraProdottiPerTipologia(@PathVariable String tipologia, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
+        Utente utente = utenteDetails.getUtente();
         // Converti in uppercase per la ricerca nel database
         String tipologiaUppercase = tipologia.toUpperCase();
         List<Prodotto> prodotti = prodottoService.findByTipologia(tipologiaUppercase);
         List<String> tipologie = prodottoService.findAllTipologieOrdinate();
         List<String> marche = prodottoService.findAllMarcheOrdinate();
         List<Integer> anni = prodottoService.findAllAnniOrdinati();
-        
-        model.addAttribute("utente", utenteDetails != null ? utenteDetails.getUtente() : null);
+
+        model.addAttribute("utente", utente);
         model.addAttribute("prodotti", prodotti);
         model.addAttribute("tipologie", tipologie);
         model.addAttribute("marche", marche);
         model.addAttribute("anni", anni);
+        model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
         model.addAttribute("tipologia", tipologia); // Mantieni l'originale per la vista
         
         return "tipologia";

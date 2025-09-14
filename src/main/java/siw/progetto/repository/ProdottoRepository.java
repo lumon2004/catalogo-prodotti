@@ -36,4 +36,7 @@ public interface ProdottoRepository extends JpaRepository<Prodotto, Long> {
 
     // trova prodotti per tipologia e marca
     List<Prodotto> findByTipologiaAndMarca(String tipologia, String marca);
+
+    // verifica se esiste un prodotto con il nome specificato
+    boolean existsByNome(String nome);
 }

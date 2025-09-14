@@ -32,8 +32,7 @@ public class ProdottoService {
     }
 
     public List<Prodotto> findByAnno(Integer anno) {
-        return prodottoRepository.findByAnno(anno);
-        
+        return prodottoRepository.findByAnno(anno);        
     }
 
     public Prodotto save(Prodotto prodotto) {
@@ -91,5 +90,13 @@ public class ProdottoService {
     public List<Integer> findAllAnniOrdinati() {
         List<Integer> anni = prodottoRepository.findDistinctAnniOrdinati();
         return anni;
+    }
+
+    public boolean saveIfNotExists(Prodotto prodotto) {
+        if (prodottoRepository.existsByNome(prodotto.getNome())) {
+            return false; // già esiste → non salvare
+        }
+        prodottoRepository.save(prodotto);
+        return true; // nuovo prodotto inserito
     }
 }

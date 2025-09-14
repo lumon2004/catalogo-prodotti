@@ -68,10 +68,17 @@
 						<p><strong>Anno:</strong> <span th:text="${prodotto.anno}">Anno</span></p>
 						<p><strong>Descrizione:</strong> <span th:text="${prodotto.descrizione}">Descrizione</span></p>
 					</div>
-					<div class="prezzo">
-						<p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
-					</div>
-				</a>
+                </a>
+                <div class="prezzo">
+                    <p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
+                    <div th:if="${isAdmin}" class="admin-actions">
+                        <a th:href="@{'/prodotti/edit/' + ${prodotto.id}}" class="btn btn-primary">Modifica</a>
+
+                        <form th:action="@{'/prodotti/delete/' + ${prodotto.id}}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?');">Elimina</button>
+                        </form>
+                    </div>
+                </div>
 			</div>
 			<div th:if="${prodotti == null or prodotti.isEmpty()}">
 				<p>Nessun prodotto trovato per questa tipologia.</p>

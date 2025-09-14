@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,120 +20,128 @@ import org.springframework.web.multipart.MultipartFile;
 import siw.progetto.model.*;
 import siw.progetto.security.UtenteDetails;
 import siw.progetto.service.ProdottoService;
+import siw.progetto.service.ImageStorageService;
 
 // Controller per la gestione dei prodotti
 // Gestisce la visualizzazione, creazione, modifica ed eliminazione dei prodotti
 @Controller
 public class ProdottoController {
 
-    // Iniezione di prodottoService per gestire le operazioni sui prodotti
-    @Autowired
-    private ProdottoService prodottoService;
+	// Iniezione di prodottoService per gestire le operazioni sui prodotti
+	@Autowired
+	private ProdottoService prodottoService;
 
-    /**
-     * Metodo per sanificare il nome del file, rimuovendo caratteri non validi.
-     * @param filename Il nome del file da sanificare.
-     * @return Il nome del file sanificato.
-     */
-    public static String sanitizeFileName(String filename) {
-        // Rimuove tutti i caratteri tranne lettere, numeri, punto e underscore
-        return filename.replaceAll("[^a-zA-Z0-9.]", "");
-    }
+	// Iniezione di imageStorageService per gestire l'upload delle immagini
+	@Autowired
+	private ImageStorageService imageStorageService;
 
-    /**
-     * Mostra i dettagli di un prodotto
-     * @param id l'ID del prodotto da mostrare
-     * @param editCommentId l'ID del commento da modificare (opzionale)
-     * @param utenteDetails i dettagli dell'utente autenticato
-     * @param model il modello per la vista
-     * @return il nome della vista da rendere
-     */
-    @GetMapping("/prodotti/{id}")
-    public String mostraProdotto(@PathVariable Long id, @RequestParam(value = "editCommentId", required = false) Long editCommentId, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
-        Prodotto prodotto = prodottoService.findById(id).orElse(null);
-        if (prodotto == null) {
-            return "redirect:/home";
-        }
+	/**
+	 * Metodo per sanificare il nome del file, rimuovendo caratteri non validi.
+	 * @param filename Il nome del file da sanificare.
+	 * @return Il nome del file sanificato.
+	 */
+	public static String sanitizeFileName(String filename) {
+		// Rimuove tutti i caratteri tranne lettere, numeri, punto e underscore
+		return filename.replaceAll("[^a-zA-Z0-9.]", "");
+	}
 
-        if (utenteDetails != null) {
-            model.addAttribute("utente", utenteDetails.getUtente());
-        }
+	/**
+	 * Mostra i dettagli di un prodotto
+	 * @param id l'ID del prodotto da mostrare
+	 * @param editCommentId l'ID del commento da modificare (opzionale)
+	 * @param utenteDetails i dettagli dell'utente autenticato
+	 * @param model il modello per la vista
+	 * @return il nome della vista da rendere
+	 */
+	@GetMapping("/prodotti/{id}")
+	public String mostraProdotto(@PathVariable Long id, @RequestParam(value = "editCommentId", required = false) Long editCommentId, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
+		Prodotto prodotto = prodottoService.findById(id).orElse(null);
+		if (prodotto == null) {
+			return "redirect:/home";
+		}
 
-        List<String> tipologie = prodottoService.findAllTipologieOrdinate();
-        List<Prodotto> prodottiSimili = prodottoService.findSimilarProducts(prodotto);
-        List<Commento> commenti = prodotto.getCommenti();
-        List<String> marche = prodottoService.findAllMarcheOrdinate();
-        List<Integer> anni = prodottoService.findAllAnniOrdinati();
-        model.addAttribute("prodottiSimili", prodottiSimili);
-        model.addAttribute("prodotto", prodotto);
-        model.addAttribute("commenti", commenti);
-        model.addAttribute("tipologie", tipologie);
-        model.addAttribute("marche", marche);
-        model.addAttribute("anni", anni);
+		if (utenteDetails != null) {
+			model.addAttribute("utente", utenteDetails.getUtente());
+		}
 
-        if (editCommentId != null) {
-            model.addAttribute("editCommentId", editCommentId);
-        } else {
-            model.addAttribute("editCommentId", null);
-        }
+		List<String> tipologie = prodottoService.findAllTipologieOrdinate();
+		List<Prodotto> prodottiSimili = prodottoService.findSimilarProducts(prodotto);
+		List<Commento> commenti = prodotto.getCommenti();
+		List<String> marche = prodottoService.findAllMarcheOrdinate();
+		List<Integer> anni = prodottoService.findAllAnniOrdinati();
+		model.addAttribute("prodottiSimili", prodottiSimili);
+		model.addAttribute("prodotto", prodotto);
+		model.addAttribute("commenti", commenti);
+		model.addAttribute("tipologie", tipologie);
+		model.addAttribute("marche", marche);
+		model.addAttribute("anni", anni);
 
-        return "prodotto"; // thymeleaf template "prodotto.html"
-    }
+		if (editCommentId != null) {
+			model.addAttribute("editCommentId", editCommentId);
+		} else {
+			model.addAttribute("editCommentId", null);
+		}
 
-    /**
-     * Mostra il form per aggiungere un nuovo prodotto.
-     * @param model Il modello per passare i dati alla vista.
-     * @return La vista del form per aggiungere un nuovo prodotto.
-     */
+		return "prodotto"; // thymeleaf template "prodotto.html"
+	}
+
+	/**
+	 * Mostra il form per aggiungere un nuovo prodotto.
+	 * @param model Il modello per passare i dati alla vista.
+	 * @param error Un parametro opzionale per indicare errori (ad esempio, nome duplicato).
+	 * @return La vista del form per aggiungere un nuovo prodotto.
+	 */
 	@GetMapping("/prodotti/new")
-	public String showFormNuovoProdotto(Model model) {
+	public String showFormNuovoProdotto(@RequestParam(value = "error", required = false) String error, Model model) {
 		model.addAttribute("prodotto", new Prodotto());
+		model.addAttribute("error", error);
+
+		// Lista dinamica di tipologie
+		List<String> tipologie = prodottoService.findAllTipologieOrdinate();
+		model.addAttribute("tipologie", tipologie);
 		return "nuovoProdotto";
 	}
 
-    /**
-     * Crea un nuovo prodotto
-     * @param prodotto il prodotto da creare
-     * @param utenteDetails i dettagli dell'utente autenticato
-     * @param file Il file dell'immagine del prodotto
-     * @param defaultImage Il percorso dell'immagine di default se non viene caricata nessuna immagine.
-     * @return il nome della vista da rendere
-     * @throws IOException Se si verifica un errore durante il caricamento del file
-     */
-    @PostMapping("/prodotti/new")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String creaProdotto(@ModelAttribute("prodotto") Prodotto prodotto, @AuthenticationPrincipal UtenteDetails utenteDetails, @RequestParam("customImage") MultipartFile file, @RequestParam(value = "imagePath", required = false) String defaultImage) throws IOException {
-        if (!file.isEmpty()) {
-            String originalFileName = file.getOriginalFilename();
-            String sanitizedFileName = sanitizeFileName(originalFileName);
-            String fileName = UUID.randomUUID().toString() + "_" + sanitizedFileName;
+	/**
+	 * Crea un nuovo prodotto
+	 * @param prodotto il prodotto da creare
+	 * @param utenteDetails i dettagli dell'utente autenticato
+	 * @param file Il file dell'immagine del prodotto
+	 * @param defaultImage Il percorso dell'immagine di default se non viene caricata nessuna immagine.
+	 * @return il nome della vista da rendere
+	 * @throws IOException Se si verifica un errore durante il caricamento del file
+	 */
+	@PostMapping("/prodotti/new")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public String creaProdotto(@ModelAttribute("prodotto") Prodotto prodotto, @AuthenticationPrincipal UtenteDetails utenteDetails, @RequestParam("customImage") MultipartFile file, @RequestParam(value = "imagePath", required = false) String defaultImage) throws IOException {
+		if (!file.isEmpty()) {
+		// Salva immagine rinominata e convertita in .jpg
+			String imageFileName = imageStorageService.salvaImmagineProdotto(file, prodotto.getNome(), prodotto.getTipologia());
+			prodotto.setImagePath(imageFileName);
+		} else if (defaultImage != null && !defaultImage.isBlank()) {
+			// Se l’admin ha selezionato un’immagine di default
+			prodotto.setImagePath("default-" + defaultImage);
+		} else {
+			// Fallback
+			prodotto.setImagePath("default-generica.jpg");
+		}
 
-            Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads");
+		boolean salvato = prodottoService.saveIfNotExists(prodotto);
+		if (!salvato) {
+			// Qui puoi decidere: rimandare al form con messaggio di errore
+			// Oppure ignorare e tornare alla lista
+			return "redirect:/prodotti/new?error=duplicate";
+		}
 
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+		return "redirect:/home";
+	}
 
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            prodotto.setImagePath(fileName);
-        } else if (defaultImage != null && !defaultImage.isBlank()) {
-            prodotto.setImagePath("default-" + defaultImage); // es: default-smartphone.jpg
-        } else {
-            prodotto.setImagePath("default-generica.jpg"); // immagine di fallback se vuoi
-        }
-
-        prodottoService.save(prodotto);
-        return "redirect:/home";
-    }
-
-    /**
-     * Mostra il form per modificare un prodotto esistente.
-     * @param id L'ID del prodotto da modificare.
-     * @param model Il modello per passare i dati alla vista.
-     * @return La vista del form per modificare il prodotto.
-     */
+	/**
+	 * Mostra il form per modificare un prodotto esistente.
+	 * @param id L'ID del prodotto da modificare.
+	 * @param model Il modello per passare i dati alla vista.
+	 * @return La vista del form per modificare il prodotto.
+	 */
 	@GetMapping("/prodotti/edit/{id}")
 	public String mostraFormModificaProdotto(@PathVariable("id") Long id, Model model) {
 		Optional<Prodotto> optionalProdotto = prodottoService.findById(id);
@@ -148,76 +154,85 @@ public class ProdottoController {
 		}
 	}
 
-    /**
-     * Aggiorna un prodotto esistente.
-     * @param prodotto Il prodotto da aggiornare.
-     * @param file Il file dell'immagine del prodotto.
-     * @param removeImage Indica se l'immagine deve essere rimossa.
-     * @return La vista della home page a cui si viene reindirizzati dopo l'aggiornamento del prodotto.
-     * @throws IOException Se si verifica un errore durante il caricamento del file.
-     */
+	/**
+	 * Aggiorna un prodotto esistente.
+	 * @param prodotto Il prodotto da aggiornare.
+	 * @param file Il file dell'immagine del prodotto.
+	 * @param removeImage Indica se l'immagine deve essere rimossa.
+	 * @return La vista del prodotto modificato a cui si viene reindirizzati dopo l'aggiornamento del prodotto.
+	 * @throws IOException Se si verifica un errore durante il caricamento del file.
+	 */
 	@PostMapping("/prodotti/update")
+	@PreAuthorize("hasAuthority('ADMIN')")
 	public String aggiornaProdotto(@ModelAttribute("prodotto") Prodotto prodotto, @RequestParam("customImage") MultipartFile file, @RequestParam(value="removeImage", required=false) String removeImage) throws IOException {
-		Optional<Prodotto> existing = prodottoService.findById(prodotto.getId());
 
-		if (existing.isPresent()) {
-			Prodotto existingProdotto = existing.get();
-
-            if (removeImage != null) {
-                // Checkbox spuntata: rimuovi immagine custom e usa default
-                existingProdotto.setImagePath("default-" + existingProdotto.getImagePath().toLowerCase());
-            } else if (!file.isEmpty()) {   // Mantieni l'immagine esistente se non è stata caricata una nuova
-				String originalFileName = file.getOriginalFilename();
-                String sanitizedFileName = sanitizeFileName(originalFileName);
-                String fileName = UUID.randomUUID().toString() + "_" + sanitizedFileName;
-                Path uploadPath = Paths.get(System.getProperty("user.dir"), "uploads");
-
-				if (!Files.exists(uploadPath)) {
-					Files.createDirectories(uploadPath);
-				}
-
-				Path filePath = uploadPath.resolve(fileName);
-				Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-				prodotto.setImagePath(fileName);
-			} else {
-				prodotto.setImagePath(existingProdotto.getImagePath());
-			}
+		Optional<Prodotto> existingOpt = prodottoService.findById(prodotto.getId());
+		if (existingOpt.isEmpty()) {
+			return "redirect:/home"; // prodotto non trovato
 		}
 
-		prodottoService.save(prodotto);
+		Prodotto existingProdotto = existingOpt.get();
+
+		// Aggiorna i campi
+		existingProdotto.setNome(prodotto.getNome());
+		existingProdotto.setMarca(prodotto.getMarca());
+		existingProdotto.setAnno(prodotto.getAnno());
+		existingProdotto.setDescrizione(prodotto.getDescrizione());
+		existingProdotto.setPrezzo(prodotto.getPrezzo());
+
+		// Mantieni la tipologia attuale, non viene cambiata dal form
+        String normalizedTipologia = existingProdotto.getTipologia();
+        existingProdotto.setTipologia(normalizedTipologia);
+
+		// Gestione immagine
+		if ("true".equals(removeImage)) {
+            existingProdotto.setImagePath(null); // oppure "default-generica.jpg"
+        } else if (!file.isEmpty()) {
+			String imagePath = imageStorageService.salvaImmagineProdotto(file, existingProdotto.getNome(), normalizedTipologia);
+			existingProdotto.setImagePath(imagePath);
+		}
+
+		prodottoService.save(existingProdotto);
+
+		return "redirect:/prodotti/" + existingProdotto.getId();
+	}
+
+	/**
+	 * Elimina un prodotto.
+	 * @param id L'ID del prodotto da eliminare.
+	 * @return La vista della home page a cui si viene reindirizzati dopo l'eliminazione del prodotto.
+	 */
+	@PostMapping("/prodotti/delete/{id}")
+	@PreAuthorize("hasAuthority('ADMIN')")
+	public String eliminaProdotto(@PathVariable Long id) throws IOException {
+		Optional<Prodotto> prodottoOpt = prodottoService.findById(id);
+		if (prodottoOpt.isPresent()) {
+			Prodotto prodotto = prodottoOpt.get();
+
+			// Rimuovi eventuali riferimenti in prodotti simili
+			for (Prodotto p : prodottoService.findAll()) {
+				if (p.getProdottiSimili().contains(prodotto)) {
+					p.getProdottiSimili().remove(prodotto);
+					prodottoService.save(p);
+				}
+			}
+
+			// Elimina immagine dal filesystem se non è default
+			if (prodotto.getImagePath() != null && !prodotto.getImagePath().startsWith("default")) {
+				Path path = Paths.get(System.getProperty("user.dir"), prodotto.getImagePath());
+				Files.deleteIfExists(path);
+			}
+
+			prodottoService.deleteById(id);
+		}
 		return "redirect:/home";
 	}
 
-    /**
-     * Elimina un prodotto.
-     * @param id L'ID del prodotto da eliminare.
-     * @return Una risposta HTTP che indica il successo o il fallimento dell'operazione.
-     */
-    @PostMapping("/prodotti/delete/{id}")
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public String eliminaProdotto(@PathVariable Long id) {
-        Optional<Prodotto> prodottoOpt = prodottoService.findById(id);
-        if (prodottoOpt.isPresent()) {
-            Prodotto prodotto = prodottoOpt.get();
-            // Rimuovi il prodotto da tutte le collezioni di prodotti simili
-            List<Prodotto> tutti = prodottoService.findAll();
-            for (Prodotto p : tutti) {
-                if (p.getProdottiSimili().contains(prodotto)) {
-                    p.getProdottiSimili().remove(prodotto);
-                    prodottoService.save(p);
-                }
-            }
-            prodottoService.deleteById(id);
-        }
-        return "redirect:/home";
-    }
+	@Value("${REMEMBER_ME_KEY}")
+	private String rememberMeKey;
 
-    @Value("${REMEMBER_ME_KEY}")
-    private String rememberMeKey;
-
-    @GetMapping("/test-key")
-    public String testKey() {
-        return "Key loaded: " + (rememberMeKey != null ? "✓" : "✗");
-    }
+	@GetMapping("/test-key")
+	public String testKey() {
+		return "Key loaded: " + (rememberMeKey != null ? "✓" : "✗");
+	}
 }
