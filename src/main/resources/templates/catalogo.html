@@ -6,7 +6,7 @@
 	<title>Home</title>
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"/>
 	<link rel="stylesheet" href="/css/style.css">
-	<link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/catalogo.css">
     <script src="/js/sidebar.js" defer></script>
 </head>
 <body>
@@ -22,7 +22,7 @@
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item">
-			<a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a>
+			<a th:href="@{/prodotti}" style="padding: 0;">Tutti i prodotti</a>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
@@ -48,29 +48,48 @@
 		<a th:each="tipologia : ${tipologie}" th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}" th:text="${tipologia.toLowerCase() == 'tv' ? tipologia.toUpperCase() : #strings.capitalizeWords(tipologia.toLowerCase())}">Tipologia</a>
 	</nav>
 	<main>
-		<div class="user-div">
-			<div style="display: flex; align-items: center; gap: .5rem;">
-				<p th:if="${isAdmin}">Sei loggato come amministratore.</p>
-				<a th:if="${isAdmin}" th:href="@{/prodotti/new}">Aggiungi nuovo prodotto</a>
-			</div>
-			<form th:action="@{/logout}" method="post">
-				<button type="submit">Esci</button>
-			</form>
-		</div>
-		<!-- Blocchi con le tipologie -->
-		<div class="tipologie-container">
-			<div th:each="tipologia : ${tipologie}" class="tipologia-blocco">
-                <a th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}">
-                    <img th:src="@{'/img/default-' + ${tipologia.toLowerCase()} + '.jpg'}" th:alt="${tipologia.toLowerCase()}" class="tipologia-immagine"/>
-                    <p th:text="${tipologia}">Nome tipologia</p>
-                </a>
-			</div>
-		</div>
+		<div th:each="tipologiaEntry : ${catalogo}" class="tipologia-block">
+            <div style="display: flex; align-items: center;">
+                <h2 th:text="${tipologiaEntry.key}"></h2>
+                <span class="toggleTipologia material-symbols-rounded">expand_more</span>
+            </div>
+
+            <div class="prodotti-list" th:each="marcaEntry : ${tipologiaEntry.value}">
+                <h3 th:text="${marcaEntry.key}"></h3>
+                <ul>
+                    <li th:each="prodotto : ${marcaEntry.value}">
+                        <a th:href="@{'/prodotti/' + ${prodotto.id}}"
+                        th:text="${prodotto.nome}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 	</main>
 	<footer>
 		<p>&copy; 2025 Catalogo Prodotti</p>
 		<p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
 		<p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
-	</footer>
+    </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggles = document.querySelectorAll('.toggleTipologia');
+
+            toggles.forEach(toggleIcon => {
+                toggleIcon.addEventListener('click', function () {
+                    // Prendo il blocco della tipologia corrente
+                    const tipologiaBlock = toggleIcon.closest('.tipologia-block');
+                    // Prendo tutte le liste prodotti sotto a quella tipologia
+                    const prodottiLists = tipologiaBlock.querySelectorAll('.prodotti-list');
+
+                    prodottiLists.forEach(list => {
+                        const isVisible = list.style.display !== 'none';
+                        list.style.display = isVisible ? 'none' : 'block';
+                    });
+
+                    toggleIcon.classList.toggle('rotated');
+                });
+            });
+        });
+    </script>
 </body>
 </html>

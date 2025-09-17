@@ -4,17 +4,17 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title th:text="${prodotto.nome}">Dettagli Prodotto</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"/>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"/>
 	<link rel="stylesheet" href="/css/style.css">
 	<link rel="stylesheet" href="/css/prodotto.css">
-    <script src="/js/sidebar.js" defer></script>
-    <script src="/js/commenti.js" defer></script>
+	<script src="/js/sidebar.js" defer></script>
+	<script src="/js/commenti.js" defer></script>
 </head>
 <body>
 	<header>
-        <span class="material-symbols-rounded" onclick="toggleSidebar()">dehaze</span>
-        <h1><a href="/">Catalogo Prodotti</a></h1>
-    </header>
+		<span class="material-symbols-rounded" onclick="toggleSidebar()">dehaze</span>
+		<h1><a href="/">Catalogo Prodotti</a></h1>
+	</header>
 	<!-- Sidebar primaria -->
 	<div id="sidebar" class="sidebar">
 		<a href="javascript:void(0)" class="closebtn" onclick="toggleSidebar()"><span class="material-symbols-rounded">close</span></a>
@@ -23,7 +23,7 @@
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item">
-			<a th:href="@{/prodotti}" style="padding: 0;">Tutti i prodotti</a>
+			<a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
@@ -43,37 +43,69 @@
 			</div>
 		</div>
 	</div>
-    <!-- Barra di navigazione per tipologia -->
+	<!-- Barra di navigazione per tipologia -->
 	<nav class="tipologie-nav">
-        <!-- Link per ogni tipologia -->
+		<!-- Link per ogni tipologia -->
 		<a th:each="tipologia : ${tipologie}" th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}" th:text="${tipologia.toLowerCase() == 'tv' ? tipologia.toUpperCase() : #strings.capitalizeWords(tipologia.toLowerCase())}">Tipologia</a>
 	</nav>
 	<main>
+        <div th:if="${isAdmin}" class="edit-button">    
+            <a th:href="@{'/prodotti/edit/' + ${prodotto.id}}">Modifica</a>
+        </div>
 		<div class="info">
-            <img th:src="@{'/uploads/' + ${prodotto.tipologia} + '/' +  ${prodotto.nome} + '.jpg'}" th:alt="${prodotto.nome}" class="prodotto-immagine"/>
+			<img th:src="@{'/uploads/' + ${prodotto.tipologia} + '/' +  ${prodotto.nome} + '.jpg'}" th:alt="${prodotto.nome}" class="prodotto-immagine"/>
 			<div>
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <h2 th:text="${prodotto.nome}">Dettagli Prodotto</h2>
-                    <p id="prezzo" th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
-                </div>
-                <h3 th:text="${prodotto.marca} + ' (' + ${prodotto.anno} + ')'">Marca (Anno)</h3>
+				<div style="display: flex; align-items: center; gap: 10px;">
+					<h2 th:text="${prodotto.nome}">Dettagli Prodotto</h2>
+					<p id="prezzo" th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
+				</div>
+				<h3 th:text="${prodotto.marca} + ' (' + ${prodotto.anno} + ')'">Marca (Anno)</h3>
 				<p th:text="${prodotto.descrizione}">Descrizione Prodotto</p>
 			</div>
 		</div>			
-		<h2>Prodotti simili</h2>
-		<div th:if="${#lists.isEmpty(prodottiSimili)}">
+		<div th:if="${isAdmin}" style="display: flex; align-items: center; justify-content: space-between;">
+            <h2>Prodotti simili</h2>
+			<a th:href="@{'/prodotti/' + ${prodotto.id} + '/simili'}" class="btn">Modifica simili</a>
+		</div>
+		<div class="filtri-container" id="filtri-simili">
+			<!-- active sul bottone di default -->
+			<button class="filtro-btn active" data-key="manuali" aria-pressed="true">Simili</button>
+			<button class="filtro-btn" data-key="suggeriti" aria-pressed="false">Suggeriti</button>
+			<button class="filtro-btn" data-key="correlati" aria-pressed="false">Correlati</button>
+		</div>
+		<div th:if="${#lists.isEmpty(similiManuali) && #lists.isEmpty(similiSuggeriti) && #lists.isEmpty(similiCorrelati)}">
 			<p>Nessun prodotto simile trovato.</p>
 		</div>
-		<div th:if="${!#lists.isEmpty(prodottiSimili)}">
-            <div th:each="prodottoSimile : ${prodottiSimili}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
-                <a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
-                    <img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
-                    <h4 th:text="${prodottoSimile.nome}">Nome Prodotto</h4>
-                    <p th:text="${prodottoSimile.marca} + ' (' + ${prodottoSimile.anno} + ')'">Marca (Anno)</p>
-                    <p th:text="${#numbers.formatDecimal(prodottoSimile.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
-                </a>
-            </div>
-        </div>
+		<div class="lista-simili active" data-list="manuali" th:if="${!#lists.isEmpty(similiManuali)}">
+			<div th:each="prodottoSimile : ${similiManuali}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
+				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
+					<img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
+					<h4 th:text="${prodottoSimile.nome}">Nome Prodotto</h4>
+					<p th:text="${prodottoSimile.marca} + ' (' + ${prodottoSimile.anno} + ')'">Marca (Anno)</p>
+					<p th:text="${#numbers.formatDecimal(prodottoSimile.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
+				</a>
+			</div>
+		</div>
+		<div class="lista-simili" data-list="suggeriti" th:if="${!#lists.isEmpty(similiSuggeriti)}">
+			<div th:each="prodottoSimile : ${similiSuggeriti}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
+				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
+					<img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
+					<h4 th:text="${prodottoSimile.nome}">Nome Prodotto</h4>
+					<p th:text="${prodottoSimile.marca} + ' (' + ${prodottoSimile.anno} + ')'">Marca (Anno)</p>
+					<p th:text="${#numbers.formatDecimal(prodottoSimile.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
+				</a>
+			</div>
+		</div>
+		<div class="lista-simili" data-list="correlati" th:if="${!#lists.isEmpty(similiCorrelati)}">
+			<div th:each="prodottoSimile : ${similiCorrelati}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
+				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
+					<img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
+					<h4 th:text="${prodottoSimile.nome}">Nome Prodotto</h4>
+					<p th:text="${prodottoSimile.marca} + ' (' + ${prodottoSimile.anno} + ')'">Marca (Anno)</p>
+					<p th:text="${#numbers.formatDecimal(prodottoSimile.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">0.000,00</p>
+				</a>
+			</div>
+		</div>
 		<h2>Commenti (<span th:text="${#lists.size(prodotto.commenti)}">0</span>)</h2>
 		<form th:action="@{'/prodotti/' + ${prodotto.id} + '/commenta'}" method="post" id="commentForm">
 			<div id="commentInput" contenteditable="true" data-placeholder="Scrivi un commento..."></div>
@@ -109,6 +141,67 @@
 				</li>
 			</ul>
 		</div>
+
+		<!-- JavaScript per scegliere la lista di simili da mostrare -->
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const buttons = Array.from(document.querySelectorAll('.filtro-btn'));
+				const lists = Array.from(document.querySelectorAll('.lista-simili'));
+
+				// mappa key -> elemento lista (solo quelle presenti nel DOM)
+				const listMap = {};
+				lists.forEach(l => { if (l.dataset && l.dataset.list) listMap[l.dataset.list] = l; });
+
+				function clearActive() {
+					lists.forEach(l => l.classList.remove('active'));
+					buttons.forEach(b => {
+						b.classList.remove('active');
+						b.setAttribute('aria-pressed', 'false');
+					});
+				}
+
+				function showList(key) {
+					clearActive();
+					const target = listMap[key];
+					if (target) {
+						target.classList.add('active');
+						const btn = buttons.find(b => b.dataset.key === key);
+						if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); }
+						return;
+					}
+
+					// fallback: mostra 'manuali' se esiste, altrimenti la prima lista disponibile
+					if (listMap['manuali']) {
+						listMap['manuali'].classList.add('active');
+						const btn = buttons.find(b => b.dataset.key === 'manuali');
+						if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); }
+						return;
+					}
+					const firstKey = Object.keys(listMap)[0];
+					if (firstKey) {
+						listMap[firstKey].classList.add('active');
+						const btn = buttons.find(b => b.dataset.key === firstKey);
+						if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); }
+					}
+				}
+
+				// attach listeners
+				buttons.forEach(button => {
+					button.addEventListener('click', (e) => {
+						e.preventDefault();
+						const key = button.dataset.key;
+						showList(key);
+					});
+				});
+
+				// init: se qualche bottone ha già .active lo usiamo; altrimenti 'manuali'
+				const initial = buttons.find(b => b.classList.contains('active')) || buttons.find(b => b.dataset.key === 'manuali');
+				showList(initial ? initial.dataset.key : 'manuali');
+
+				// DEBUG helper (rimuovi se non ti serve)
+				// console.log('filtro - buttons:', buttons.map(b=>b.dataset.key), 'lists:', Object.keys(listMap));
+			});
+		</script>
 
 		<!-- JavaScript per gestire la modifica inline -->
 		<script>
@@ -148,10 +241,10 @@
 			}
 		</script>
 	</main>
-    <footer>
-        <p>&copy; 2025 Catalogo Prodotti</p>
-        <p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
-        <p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
-    </footer>
+	<footer>
+		<p>&copy; 2025 Catalogo Prodotti</p>
+		<p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
+		<p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+	</footer>
 </body>
 </html>

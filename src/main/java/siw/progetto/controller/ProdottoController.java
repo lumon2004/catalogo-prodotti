@@ -55,6 +55,7 @@ public class ProdottoController {
 	 */
 	@GetMapping("/prodotti/{id}")
 	public String mostraProdotto(@PathVariable Long id, @RequestParam(value = "editCommentId", required = false) Long editCommentId, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
+        Utente utente = utenteDetails.getUtente();
 		Prodotto prodotto = prodottoService.findById(id).orElse(null);
 		if (prodotto == null) {
 			return "redirect:/home";
@@ -64,16 +65,21 @@ public class ProdottoController {
 			model.addAttribute("utente", utenteDetails.getUtente());
 		}
 
-		List<String> tipologie = prodottoService.findAllTipologieOrdinate();
-		List<Prodotto> prodottiSimili = prodottoService.findSimilarProducts(prodotto);
-		List<Commento> commenti = prodotto.getCommenti();
-		List<String> marche = prodottoService.findAllMarcheOrdinate();
-		List<Integer> anni = prodottoService.findAllAnniOrdinati();
-		model.addAttribute("prodottiSimili", prodottiSimili);
 		model.addAttribute("prodotto", prodotto);
-		model.addAttribute("commenti", commenti);
+        model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
+		List<String> tipologie = prodottoService.findAllTipologieOrdinate();
 		model.addAttribute("tipologie", tipologie);
+		List<Prodotto> similiManuali = prodottoService.getManuali(prodotto);
+		model.addAttribute("similiManuali", similiManuali);
+		List<Prodotto> similiSuggeriti = prodottoService.getSuggeriti(prodotto);
+		model.addAttribute("similiSuggeriti", similiSuggeriti);
+		List<Prodotto> similiCorrelati = prodottoService.getCorrelati(prodotto);
+		model.addAttribute("similiCorrelati", similiCorrelati);
+		List<Commento> commenti = prodotto.getCommenti();
+		model.addAttribute("commenti", commenti);
+		List<String> marche = prodottoService.findAllMarcheOrdinate();
 		model.addAttribute("marche", marche);
+		List<Integer> anni = prodottoService.findAllAnniOrdinati();
 		model.addAttribute("anni", anni);
 
 		if (editCommentId != null) {

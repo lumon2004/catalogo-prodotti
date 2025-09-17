@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Gestione simili per ' + ${prodotto.nome}">Gestione simili</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/modificaSimili.css">
+</head>
+<body>
+    <header><h1><a href="/">Gestione Prodotti</a></h1></header>
+    <main>
+        <h2 th:text="'Gestione simili per: ' + ${prodotto.nome}"></h2>
+
+        <form th:action="@{'/prodotti/' + ${prodotto.id} + '/simili'}" method="post">
+
+            <!-- Ciclo per tipologia -->
+            <div th:each="entryTip : ${prodottiPerTipologiaEMarca}">
+                <fieldset>
+                    <legend th:text="${entryTip.key}">Tipologia</legend>
+
+                    <!-- Ciclo per marca dentro la tipologia -->
+                    <div th:each="entryMarca : ${entryTip.value}">
+                        <h4 th:text="${entryMarca.key}">Marca</h4>
+
+                        <!-- Ciclo per prodotti della marca -->
+                        <div th:each="p : ${entryMarca.value}">
+                            <label>
+                                <input type="checkbox" name="similiIds"
+                                    th:value="${p.id}"
+                                    th:checked="${similiSelezionati.contains(p)}"
+                                    th:disabled="${p.id == prodotto.id}" />
+                                <span th:text="${p.nome}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <br>
+            <div style="width: 100%; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; gap: 1rem;">
+                <button type="submit">Salva</button>
+                <a th:href="@{'/prodotti/' + ${prodotto.id}}">Annulla</a>
+            </div>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2025 Catalogo Prodotti</p>
+		<p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
+		<p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
+    </footer>
+</body>
+</html>

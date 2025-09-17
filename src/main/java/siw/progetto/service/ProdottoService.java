@@ -6,8 +6,14 @@ import siw.progetto.model.Prodotto;
 import siw.progetto.repository.ProdottoRepository;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdottoService {
@@ -43,22 +49,45 @@ public class ProdottoService {
         prodottoRepository.deleteById(id);
     }
 
-    public List<Prodotto> findSimilarProducts(Prodotto prodotto) {
-    // Recupera tutti i prodotti della stessa tipologia e marca
-    List<Prodotto> candidates = prodottoRepository.findByTipologiaAndMarca(
-        prodotto.getTipologia(), prodotto.getMarca()
-    );
+    // Recupera i simili definiti manualmente
+    public List<Prodotto> getManuali(Prodotto prodotto) {
+        Set<Prodotto> manuali = prodotto.getProdottiSimili();
+        return manuali.stream()
+            .sorted((p1, p2) -> Double.compare(p2.getPrezzo(), p1.getPrezzo())) // ordine decrescente
+            .toList();
+    }
 
-    // Filtra quelli entro 200€ di differenza rispetto al prezzo del prodotto corrente
-    double prezzoMin = prodotto.getPrezzo() - 200;
-    double prezzoMax = prodotto.getPrezzo() + 200;
+    // Simili suggeriti
+    // Recupera tutti i prodotti della stessa tipologia, della stessa marca e con una variazione di prezzo di 200€
+    public List<Prodotto> getSuggeriti(Prodotto prodotto) {
+        List<Prodotto> candidates = prodottoRepository.findByTipologiaAndMarca(prodotto.getTipologia(), prodotto.getMarca());
 
-    return candidates.stream()
-                     .filter(p -> !p.getId().equals(prodotto.getId())) // esclude il prodotto stesso
-                     .filter(p -> p.getPrezzo() >= prezzoMin && p.getPrezzo() <= prezzoMax)
-                     .toList();
-}
+        // Filtra quelli entro 200€ di differenza rispetto al prezzo del prodotto corrente
+        double prezzoMin = prodotto.getPrezzo() - 200;
+        double prezzoMax = prodotto.getPrezzo() + 200;
 
+        return candidates.stream()
+            .filter(p -> !p.getId().equals(prodotto.getId())) // esclude il prodotto stesso
+            .filter(p -> p.getPrezzo() >= prezzoMin && p.getPrezzo() <= prezzoMax)
+            .sorted((p1, p2) -> Double.compare(p2.getPrezzo(), p1.getPrezzo())) // ordine decrescente
+            .toList();
+    }
+
+    // Simili correlati
+    // Recupera tutti i prodotti della stessa tipologia e con una variazione di prezzo di 200€
+    public List<Prodotto> getCorrelati(Prodotto prodotto) {
+        List<Prodotto> candidates = prodottoRepository.findByTipologia(prodotto.getTipologia());
+
+        // Filtra per prezzo
+        double prezzoMin = prodotto.getPrezzo() - 200;
+        double prezzoMax = prodotto.getPrezzo() + 200;
+
+        return candidates.stream()
+            .filter(p -> !p.getId().equals(prodotto.getId())) // esclude il prodotto stesso
+            .filter(p -> p.getPrezzo() >= prezzoMin && p.getPrezzo() <= prezzoMax)
+            .sorted((p1, p2) -> Double.compare(p2.getPrezzo(), p1.getPrezzo())) // ordine decrescente
+            .toList();
+    }
 
     public List<String> findAllTipologie() {
         return prodottoRepository.findDistinctTipologia();
@@ -90,6 +119,38 @@ public class ProdottoService {
     public List<Integer> findAllAnniOrdinati() {
         List<Integer> anni = prodottoRepository.findDistinctAnniOrdinati();
         return anni;
+    }
+
+    public Map<String, Map<String, List<Prodotto>>> getProdottiRaggruppatiPerTipologiaEMarca() {
+        List<Prodotto> tutti = prodottoRepository.findAll();
+
+        Map<String, Map<String, List<Prodotto>>> raggruppati = new LinkedHashMap<>();
+
+        for (String tip : ordinePersonalizzato) {
+            // filtro per tipologia
+            List<Prodotto> prodottiTipologia = tutti.stream()
+                    .filter(p -> p.getTipologia().equalsIgnoreCase(tip))
+                    .toList();
+
+            if (!prodottiTipologia.isEmpty()) {
+                // raggruppo per marca mantenendo ordine alfabetico
+                Map<String, List<Prodotto>> perMarca = prodottiTipologia.stream()
+                        .collect(Collectors.groupingBy(
+                                Prodotto::getMarca,
+                                TreeMap::new, // marche in ordine alfabetico
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream()
+                                                    .sorted(Comparator.comparing(Prodotto::getId))
+                                                    .toList()
+                                )
+                        ));
+
+                raggruppati.put(tip, perMarca);
+            }
+        }
+
+        return raggruppati;
     }
 
     public boolean saveIfNotExists(Prodotto prodotto) {

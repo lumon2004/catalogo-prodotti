@@ -30,7 +30,7 @@ div.user-div form > button {
 
 div.tipologie-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(25%, 1fr)); 
+    grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
 }

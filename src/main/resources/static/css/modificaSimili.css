@@ -1,0 +1,35 @@
+fieldset {
+    border: none;
+    border-top: 1px solid var(--primary-color);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(20%, 1fr));
+    gap: 1rem;
+}
+
+fieldset legend {
+    font-size: 32px;
+    font-weight: 500;
+}
+
+fieldset h4 {
+    font-size: 24px;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+main form div button[type="submit"], main form div a {
+    border: none;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+main form div button[type="submit"] {
+    background-color: var(--primary-color);
+    color: #f4f4f4;
+}
+
+main form div a {
+    background-color: lightgrey;
+    color: red;
+}
