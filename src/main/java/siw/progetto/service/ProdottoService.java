@@ -6,9 +6,14 @@ import siw.progetto.model.Prodotto;
 import siw.progetto.repository.ProdottoRepository;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ProdottoService {
@@ -114,6 +119,38 @@ public class ProdottoService {
     public List<Integer> findAllAnniOrdinati() {
         List<Integer> anni = prodottoRepository.findDistinctAnniOrdinati();
         return anni;
+    }
+
+    public Map<String, Map<String, List<Prodotto>>> getProdottiRaggruppatiPerTipologiaEMarca() {
+        List<Prodotto> tutti = prodottoRepository.findAll();
+
+        Map<String, Map<String, List<Prodotto>>> raggruppati = new LinkedHashMap<>();
+
+        for (String tip : ordinePersonalizzato) {
+            // filtro per tipologia
+            List<Prodotto> prodottiTipologia = tutti.stream()
+                    .filter(p -> p.getTipologia().equalsIgnoreCase(tip))
+                    .toList();
+
+            if (!prodottiTipologia.isEmpty()) {
+                // raggruppo per marca mantenendo ordine alfabetico
+                Map<String, List<Prodotto>> perMarca = prodottiTipologia.stream()
+                        .collect(Collectors.groupingBy(
+                                Prodotto::getMarca,
+                                TreeMap::new, // marche in ordine alfabetico
+                                Collectors.collectingAndThen(
+                                        Collectors.toList(),
+                                        list -> list.stream()
+                                                    .sorted(Comparator.comparing(Prodotto::getId))
+                                                    .toList()
+                                )
+                        ));
+
+                raggruppati.put(tip, perMarca);
+            }
+        }
+
+        return raggruppati;
     }
 
     public boolean saveIfNotExists(Prodotto prodotto) {

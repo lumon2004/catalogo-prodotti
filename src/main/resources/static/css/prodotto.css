@@ -172,10 +172,17 @@ ul > li.comment-item {
 	display: flex;
 	align-items: center;
 	gap: 5px;
+    margin-bottom: .5rem;
 }
 
 div.comment-content {
 	width: 100%;
+    display: flex;
+}
+
+span.tempo-commento {
+    margin-left: auto;
+    color: grey;
 }
 
 form.edit-form {

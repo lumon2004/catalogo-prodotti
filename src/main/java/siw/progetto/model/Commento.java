@@ -1,7 +1,11 @@
 package siw.progetto.model;
 
 import jakarta.persistence.*;
+
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Objects;
 
 @Entity
@@ -63,6 +67,47 @@ public class Commento {
     }
     public void setProdotto(Prodotto prodotto) {
         this.prodotto = prodotto;
+    }
+
+    public String getTempoTrascorso() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(dataCreazione, now);
+
+        long secondiTotali = duration.getSeconds();
+
+        if (secondiTotali < 60) {
+            return "Adesso";
+        }
+
+        long minuti = secondiTotali / 60;
+        if (minuti < 60) {
+            return minuti == 1 ? "1 minuto fa" : minuti + " minuti fa";
+        }
+
+        long ore = minuti / 60;
+        if (ore < 24) {
+            return ore == 1 ? "1 ora fa" : ore + " ore fa";
+        }
+
+        // calcolo giorni, mesi e anni con Period per maggiore precisione
+        LocalDate dataCreazioneDate = dataCreazione.toLocalDate();
+        LocalDate nowDate = now.toLocalDate();
+        Period period = Period.between(dataCreazioneDate, nowDate);
+
+        if (period.getYears() > 0) {
+            return period.getYears() == 1 ? "1 anno fa" : period.getYears() + " anni fa";
+        }
+
+        if (period.getMonths() > 0) {
+            return period.getMonths() == 1 ? "1 mese fa" : period.getMonths() + " mesi fa";
+        }
+
+        if (period.getDays() > 0) {
+            return period.getDays() == 1 ? "1 giorno fa" : period.getDays() + " giorni fa";
+        }
+
+        // fallback: meno di un giorno ma più di 23 ore
+        return "1 giorno fa";
     }
 
     /* equals e hashCode */

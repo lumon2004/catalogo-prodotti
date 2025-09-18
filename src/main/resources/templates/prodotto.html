@@ -135,6 +135,8 @@
 								<button type="button" th:onclick="'cancelEdit(' + ${commento.id} + ')'">Annulla</button>
 							</div>
 						</form>
+
+                        <span class="tempo-commento" th:text="${commento.tempoTrascorso}">0 minuti fa</span>
 					</div>
 					
 					<!-- Pulsanti di azione (solo per i propri commenti) -->
