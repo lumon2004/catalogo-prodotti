@@ -73,7 +73,7 @@ header {
 .sidebar, .sidebar-secondary {
     top: 0;
     bottom: 0;
-    height: 100vh; /* più sicuro di 100% per fixed elements */
+    /*height: 100vh;*/ /* più sicuro di 100% per fixed elements */
 }
 
 .sidebar {
@@ -81,10 +81,15 @@ header {
     left: 0;
     width: 0px;
     background-color: var(--primary-color);
+    overflow-y: auto;
     overflow-x: hidden;
     transition: width 0.25s ease;
     padding-top: 60px;
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
 }
 
 /* Quando attiva */
@@ -105,6 +110,12 @@ header {
     color: rgb(186, 186, 186);
     margin: 10px 15px;
     margin-top: 25px;
+}
+
+.sidebar form {
+    margin: 0;
+    padding: 1rem;
+    width: 100%;
 }
 
 /* SECONDARY (nuovo/aggiornato) */
@@ -155,8 +166,30 @@ header {
     align-items: center;
 }
 
-.sidebar-item:hover {
+.sidebar-item:hover:not(.sidebar-item:last-child) {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-item:last-child {
+    margin-top: auto;
+    display: flex;
+}
+
+.sidebar-item button[type="submit"] {
+    margin: 0 auto;
+    display: block;
+    border: 2px solid #f4f4f4;
+    padding: 5px 15px;
+    font-size: 16px;
+    border-radius: 20px;
+    color: #f4f4f4;
+    background-color: var(--primary-color);
+    transition: .3s ease;
+}
+
+.sidebar-item button[type="submit"]:hover {
+    background-color: #f4f4f4;
+    color: var(--primary-color);
 }
 
 /* Link dentro entrambi le sidebar */

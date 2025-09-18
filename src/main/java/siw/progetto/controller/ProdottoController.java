@@ -65,8 +65,8 @@ public class ProdottoController {
 			model.addAttribute("utente", utenteDetails.getUtente());
 		}
 
-		model.addAttribute("prodotto", prodotto);
         model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
+		model.addAttribute("prodotto", prodotto);
 		List<String> tipologie = prodottoService.findAllTipologieOrdinate();
 		model.addAttribute("tipologie", tipologie);
 		List<Prodotto> similiManuali = prodottoService.getManuali(prodotto);

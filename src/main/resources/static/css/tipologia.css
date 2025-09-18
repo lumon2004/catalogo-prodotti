@@ -8,6 +8,28 @@ div.filtri-container {
     margin-bottom: 1rem;
 }
 
+div.filtri-container input[type="text"] {
+    margin-left: auto;
+    border: 2px solid var(--primary-color);
+    border-radius: 20px;
+    padding: 10px 10px;
+    font-size: 12px;
+    width: 15%;
+}
+
+@media (prefers-color-scheme: dark) {
+    div.filtri-container input[type="text"] {
+        color: white;
+        background-color: #1a1a1a;
+    }
+}
+
+div.filtri-container input[type="text"]:focus {
+    outline: none;
+    border: 2px solid var(--secondary-color);
+    box-shadow: 0 0 5px var(--secondary-color);
+}
+
 button.filtro-btn {
     border: 2px solid var(--primary-color);
     background-color: #f4f4f4;
@@ -23,6 +45,13 @@ button.filtro-btn {
 button.filtro-btn.attivo {
     background-color: var(--primary-color);
     color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    button.filtro-btn {
+        background-color: #1a1a1a;
+        color: #fff;
+    }
 }
 
 div.prodotti-container {

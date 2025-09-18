@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import siw.progetto.model.Prodotto;
+import siw.progetto.model.Utente;
 import siw.progetto.security.UtenteDetails;
 import siw.progetto.service.ProdottoService;
 
@@ -31,12 +32,14 @@ public class AnnoController {
      */
     @GetMapping("/anno/{anno}")
     public String mostraProdottiPerAnno(@PathVariable Integer anno, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
+        Utente utente = utenteDetails.getUtente();
         List<Prodotto> prodotti = prodottoService.findByAnno(anno);
         List<String> tipologie = prodottoService.findAllTipologieOrdinate();
         List<String> marche = prodottoService.findAllMarcheOrdinate();
         List<Integer> anni = prodottoService.findAllAnniOrdinati();
         
         model.addAttribute("utente", utenteDetails != null ? utenteDetails.getUtente() : null);
+        model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
         model.addAttribute("prodotti", prodotti);
         model.addAttribute("tipologie", tipologie);
         model.addAttribute("marche", marche);

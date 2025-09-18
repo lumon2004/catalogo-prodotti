@@ -22,8 +22,11 @@
 		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item"><a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a></div>
 		<div class="sidebar-item">
-			<a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a>
+			<form th:action="@{/logout}" method="post">
+				<button type="submit">Esci</button>
+			</form>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
@@ -68,14 +71,21 @@
                         <p><strong>Anno:</strong> <span th:text="${prodotto.anno}">Anno</span></p>
                         <p><strong>Descrizione:</strong> <span th:text="${prodotto.descrizione}">Descrizione</span></p>
                     </div>
-                    <div class="prezzo">
-                        <p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
-                    </div>
                 </a>
+                <div class="prezzo">
+                    <p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
+                    <div th:if="${isAdmin}" class="admin-actions">
+                        <a th:href="@{'/prodotti/edit/' + ${prodotto.id}}" class="btn btn-primary">Modifica</a>
+
+                        <form th:action="@{'/prodotti/delete/' + ${prodotto.id}}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?');">Elimina</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div th:if="${prodotti == null or prodotti.isEmpty()}">
-            <p>Nessun prodotto del <span th:text="${anno}">1970</span> trovato.</p>
+            <div th:if="${prodotti == null or prodotti.isEmpty()}">
+                <p>Nessun prodotto del <span th:text="${anno}">1970</span> trovato.</p>
+            </div>
         </div>
     </main>
     <footer>

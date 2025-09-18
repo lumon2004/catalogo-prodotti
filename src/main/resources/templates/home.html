@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"/>
 	<link rel="stylesheet" href="/css/style.css">
 	<link rel="stylesheet" href="/css/home.css">
-    <script src="/js/sidebar.js" defer></script>
+	<script src="/js/sidebar.js" defer></script>
 </head>
 <body>
 	<header>
@@ -21,8 +21,11 @@
 		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item"><a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a></div>
 		<div class="sidebar-item">
-			<a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a>
+			<form th:action="@{/logout}" method="post">
+				<button type="submit">Esci</button>
+			</form>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
@@ -42,9 +45,9 @@
 			</div>
 		</div>
 	</div>
-    <!-- Barra di navigazione -->
+	<!-- Barra di navigazione -->
 	<nav class="tipologie-nav">
-        <!-- Link per ogni tipologia -->
+		<!-- Link per ogni tipologia -->
 		<a th:each="tipologia : ${tipologie}" th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}" th:text="${tipologia.toLowerCase() == 'tv' ? tipologia.toUpperCase() : #strings.capitalizeWords(tipologia.toLowerCase())}">Tipologia</a>
 	</nav>
 	<main>
@@ -53,17 +56,14 @@
 				<p th:if="${isAdmin}">Sei loggato come amministratore.</p>
 				<a th:if="${isAdmin}" th:href="@{/prodotti/new}">Aggiungi nuovo prodotto</a>
 			</div>
-			<form th:action="@{/logout}" method="post">
-				<button type="submit">Esci</button>
-			</form>
 		</div>
 		<!-- Blocchi con le tipologie -->
 		<div class="tipologie-container">
 			<div th:each="tipologia : ${tipologie}" class="tipologia-blocco">
-                <a th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}">
-                    <img th:src="@{'/img/default-' + ${tipologia.toLowerCase()} + '.jpg'}" th:alt="${tipologia.toLowerCase()}" class="tipologia-immagine"/>
-                    <p th:text="${tipologia}">Nome tipologia</p>
-                </a>
+				<a th:href="@{'/tipologia/' + ${tipologia.toLowerCase()}}">
+					<img th:src="@{'/img/default-' + ${tipologia.toLowerCase()} + '.jpg'}" th:alt="${tipologia.toLowerCase()}" class="tipologia-immagine"/>
+					<p th:text="${tipologia}">Nome tipologia</p>
+				</a>
 			</div>
 		</div>
 	</main>

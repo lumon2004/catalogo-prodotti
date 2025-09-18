@@ -84,14 +84,18 @@ div.lista-simili {
 	overflow-x: auto;
 	padding-bottom: 10px;
 	margin-bottom: 30px;
+    flex-wrap: nowrap;
+    flex: 0 0 auto;
 }
 
 .lista-simili.active {
     display: flex;
+    flex-wrap: nowrap;
 }
 
 div.simile-item {
-	width: 15%;
+    max-width: 15%;
+	flex: 0 0 15%;
 	border: 2px solid var(--tertiary-color);
 	border-radius: 10px;
 	background-color: var(--primary-color);

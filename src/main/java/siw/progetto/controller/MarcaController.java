@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import siw.progetto.model.Prodotto;
+import siw.progetto.model.Utente;
 import siw.progetto.security.UtenteDetails;
 import siw.progetto.service.ProdottoService;
 
@@ -31,6 +32,8 @@ public class MarcaController {
      */
     @GetMapping("/marca/{marca}")
     public String mostraProdottiPerMarca(@PathVariable String marca, @AuthenticationPrincipal UtenteDetails utenteDetails, Model model) {
+        Utente utente = utenteDetails.getUtente();
+        
         if (marca.equals("hp") || marca.equals("lg") || marca.equals("tcl")) {
             marca = marca.toUpperCase();
         } else {
@@ -46,6 +49,7 @@ public class MarcaController {
         model.addAttribute("tipologie", tipologie);
         model.addAttribute("marche", marche);
         model.addAttribute("anni", anni);
+        model.addAttribute("isAdmin", utente.getRole() == Utente.Role.ADMIN);
         model.addAttribute("marca", marca); // Mantieni l'originale per la vista
         
         return "marca";

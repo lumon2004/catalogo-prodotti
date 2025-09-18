@@ -22,8 +22,11 @@
 		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item"><a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a></div>
 		<div class="sidebar-item">
-			<a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a>
+			<form th:action="@{/logout}" method="post">
+				<button type="submit">Esci</button>
+			</form>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
@@ -73,10 +76,8 @@
 			<button class="filtro-btn" data-key="suggeriti" aria-pressed="false">Suggeriti</button>
 			<button class="filtro-btn" data-key="correlati" aria-pressed="false">Correlati</button>
 		</div>
-		<div th:if="${#lists.isEmpty(similiManuali) && #lists.isEmpty(similiSuggeriti) && #lists.isEmpty(similiCorrelati)}">
-			<p>Nessun prodotto simile trovato.</p>
-		</div>
-		<div class="lista-simili active" data-list="manuali" th:if="${!#lists.isEmpty(similiManuali)}">
+		<div class="lista-simili active" data-list="manuali">
+            <p th:if="${#lists.isEmpty(similiManuali)}">Nessun prodotto simile trovato.</p>
 			<div th:each="prodottoSimile : ${similiManuali}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
 				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
 					<img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
@@ -86,7 +87,8 @@
 				</a>
 			</div>
 		</div>
-		<div class="lista-simili" data-list="suggeriti" th:if="${!#lists.isEmpty(similiSuggeriti)}">
+		<div class="lista-simili" data-list="suggeriti">
+            <p th:if="${#lists.isEmpty(similiSuggeriti)}">Nessun prodotto suggerito trovato.</p>
 			<div th:each="prodottoSimile : ${similiSuggeriti}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
 				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
 					<img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>
@@ -96,7 +98,8 @@
 				</a>
 			</div>
 		</div>
-		<div class="lista-simili" data-list="correlati" th:if="${!#lists.isEmpty(similiCorrelati)}">
+		<div class="lista-simili" data-list="correlati">
+            <p th:if="${#lists.isEmpty(similiCorrelati)}">Nessun prodotto correlato trovato.</p>
 			<div th:each="prodottoSimile : ${similiCorrelati}" th:if="${prodottoSimile.id != prodotto.id}" class="simile-item">
 				<a th:href="@{'/prodotti/' + ${prodottoSimile.id}}">
 					<img th:src="@{'/uploads/' + ${prodottoSimile.tipologia} + '/' +  ${prodottoSimile.nome} + '.jpg'}" th:alt="${prodottoSimile.nome}" class="simile-immagine"/>

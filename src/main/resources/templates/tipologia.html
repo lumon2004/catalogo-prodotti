@@ -22,8 +22,11 @@
 		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item"><a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a></div>
 		<div class="sidebar-item">
-			<a th:href="@{/prodotti}" style="padding: 0;">Tutti i prodotti</a>
+			<form th:action="@{/logout}" method="post">
+				<button type="submit">Esci</button>
+			</form>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
@@ -56,6 +59,9 @@
 			<button class="filtro-btn" data-key="marca" data-order="asc">Marca ↑</button>
 			<button class="filtro-btn" data-key="anno" data-order="asc">Anno ↑</button>
 			<button class="filtro-btn" data-key="prezzo" data-order="asc">Prezzo ↑</button>
+
+			<!-- Barra di ricerca lato client -->
+			<input type="text" id="searchInput" placeholder="Cerca per nome...">
 		</div>
 		<div th:if="${prodotti != null and !prodotti.isEmpty()}" class="prodotti-container">
 			<div th:each="prodotto : ${prodotti}" class="prodotto-blocco">
@@ -68,21 +74,25 @@
 						<p><strong>Anno:</strong> <span th:text="${prodotto.anno}">Anno</span></p>
 						<p><strong>Descrizione:</strong> <span th:text="${prodotto.descrizione}">Descrizione</span></p>
 					</div>
-                </a>
-                <div class="prezzo">
-                    <p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
-                    <div th:if="${isAdmin}" class="admin-actions">
-                        <a th:href="@{'/prodotti/edit/' + ${prodotto.id}}" class="btn btn-primary">Modifica</a>
+				</a>
+				<div class="prezzo">
+					<p><strong>Prezzo:</strong><br> <span th:text="${#numbers.formatDecimal(prodotto.prezzo, 1, 'POINT', 2, 'COMMA')} + ' €'">Prezzo</span></p>
+					<div th:if="${isAdmin}" class="admin-actions">
+						<a th:href="@{'/prodotti/edit/' + ${prodotto.id}}" class="btn btn-primary">Modifica</a>
 
-                        <form th:action="@{'/prodotti/delete/' + ${prodotto.id}}" method="post" style="display:inline">
-                            <button type="submit" class="btn btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?');">Elimina</button>
-                        </form>
-                    </div>
-                </div>
+						<form th:action="@{'/prodotti/delete/' + ${prodotto.id}}" method="post" style="display:inline">
+							<button type="submit" class="btn btn-danger" onclick="return confirm('Sei sicuro di voler eliminare questo prodotto?');">Elimina</button>
+						</form>
+					</div>
+				</div>
 			</div>
 			<div th:if="${prodotti == null or prodotti.isEmpty()}">
 				<p>Nessun prodotto trovato per questa tipologia.</p>
 			</div>
+		</div>
+
+		<div id="noResultsMessage" style="display:none; margin-top: 1rem; font-weight: bold;">
+			Nessun prodotto trovato per questa ricerca.
 		</div>
 	</main>
 	<footer>
@@ -90,5 +100,27 @@
 		<p>Progetto assegnato dal docente per il corso di Sistemi Informativi su Web - appello di settembre</p>
 		<p>Realizzato da <strong>Luca Monaco</strong> | <a href="mailto:luca.monaco04@icloud.com">Contattami</a> | <a href="https://github.com/lumon2004/catalogo-prodotti" target="_blank">GitHub</a></p>
 	</footer>
+	<script>
+		const searchInput = document.getElementById('searchInput');
+		const prodottiBlocchi = document.querySelectorAll('.prodotto-blocco');
+		const noResultsMessage = document.getElementById('noResultsMessage');
+
+		searchInput.addEventListener('input', () => {
+			const query = searchInput.value.toLowerCase();
+			let anyVisible = false;
+
+			prodottiBlocchi.forEach(blocco => {
+				const nomeProdotto = blocco.querySelector('h3').textContent.toLowerCase();
+				if (nomeProdotto.includes(query)) {
+					blocco.style.display = 'flex';
+					anyVisible = true;
+				} else {
+					blocco.style.display = 'none';
+				}
+			});
+			// Mostra o nascondi il messaggio
+    		noResultsMessage.style.display = anyVisible ? 'none' : 'block';
+		});
+	</script>
 </body>
 </html>

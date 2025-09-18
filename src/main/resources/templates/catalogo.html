@@ -21,8 +21,11 @@
 		<div class="sidebar-item" data-submenu="tipologie">Tipologia <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="marche">Marca <span class="material-symbols-rounded">chevron_right</span></div>
 		<div class="sidebar-item" data-submenu="anni">Anno <span class="material-symbols-rounded">chevron_right</span></div>
+		<div class="sidebar-item"><a th:href="@{/catalogo}" style="padding: 0;">Tutti i prodotti</a></div>
 		<div class="sidebar-item">
-			<a th:href="@{/prodotti}" style="padding: 0;">Tutti i prodotti</a>
+			<form th:action="@{/logout}" method="post">
+				<button type="submit">Esci</button>
+			</form>
 		</div>
 	</div>
 	<!-- Sidebar secondaria -->
